@@ -1,0 +1,68 @@
+[2025-12-06T14:24:21.237Z] error: Failed CREATE School: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "school_name"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+[2025-12-06T15:11:21.161Z] error: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "role"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+[2025-12-06T15:32:16.268Z] error: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "role"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+[2025-12-06T15:35:51.212Z] error: undefined is not an object (evaluating 'service.register')
+[2025-12-06T15:38:55.321Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:41:07.773Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:41:44.838Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:56:45.999Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:57:05.129Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:57:39.106Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:58:19.572Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T15:59:26.375Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T16:00:16.621Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T21:21:18.203Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T21:39:28.686Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T21:40:33.000Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T21:41:58.017Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T21:42:06.728Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T21:42:20.125Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T22:06:21.314Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T22:06:58.790Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T22:08:24.058Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T22:08:34.126Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T22:09:14.344Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-06T22:10:42.236Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T13:56:51.000Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T14:04:40.438Z] error: token (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImZ1bGxfbmFtZSI6Ik1pbGxhdGkgSGFuaWZhIFN5YWhpZGFoIiwidXNlcm5hbWUiOiJtaWxsYXRpaHMiLCJyb2xlIjoiZ3VydSJ9LCJleHAiOjE3NjU0NjE2MDh9.o5y77z--CUr4lcMxICjjYHTYppiLHhXO_KFKDomzkvg) expired
+[2025-12-11T14:39:50.590Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T14:40:28.585Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T15:02:40.987Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T15:04:22.605Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T15:31:38.567Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T15:32:59.887Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:39:26.622Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:40:01.522Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:40:37.800Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:43:30.661Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:44:32.850Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:48:05.087Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:48:14.054Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-11T16:50:26.025Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
