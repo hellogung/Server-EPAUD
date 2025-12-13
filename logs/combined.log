@@ -198,3 +198,105 @@
 [2025-12-11T17:07:00.543Z] info: GET /api/auth/verify - 1ms
 [2025-12-11T17:07:33.259Z] info: GET /api/auth/verify - 1ms
 [2025-12-11T17:07:55.817Z] info: GET /api/auth/verify - 0ms
+[2025-12-13T15:25:23.286Z] info: POST /api/auth/login - 59ms
+[2025-12-13T15:25:30.090Z] info: POST /api/auth/login - 23ms
+[2025-12-13T15:25:30.097Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T15:26:56.047Z] info: POST /api/auth/login - 14ms
+[2025-12-13T16:23:33.311Z] info: POST /api/auth/refresh-token - 1ms
+[2025-12-13T16:37:45.438Z] info: POST /api/auth/refresh-token - 7ms
+[2025-12-13T16:45:57.450Z] error: Refresh Token expired
+[2025-12-13T16:45:57.451Z] info: POST /api/auth/refresh-token - 2ms
+[2025-12-13T16:46:08.329Z] info: POST /api/auth/login - 40ms
+[2025-12-13T16:46:19.794Z] info: POST /api/auth/refresh-token - 1ms
+[2025-12-13T17:38:10.398Z] info: POST /api/auth/login - 17ms
+[2025-12-13T17:38:10.398Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:38:59.542Z] info: POST /api/auth/login - 15ms
+[2025-12-13T17:38:59.543Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:39:13.298Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:39:13.299Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:39:54.973Z] info: POST /api/auth/login - 21ms
+[2025-12-13T17:39:54.975Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:40:21.247Z] info: POST /api/auth/login - 17ms
+[2025-12-13T17:40:21.247Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:40:34.115Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:40:34.116Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:40:51.480Z] info: POST /api/auth/login - 14ms
+[2025-12-13T17:40:51.480Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:41:36.294Z] info: POST /api/auth/login - 13ms
+[2025-12-13T17:41:36.294Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:42:28.026Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:45:26.752Z] info: POST /api/auth/login - 15ms
+[2025-12-13T17:45:26.753Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:45:40.765Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:45:40.766Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:45:49.349Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:45:49.349Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:46:22.596Z] info: POST /api/auth/login - 18ms
+[2025-12-13T17:46:22.597Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:46:46.949Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:46:46.950Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:47:07.354Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:47:30.797Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:47:30.798Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T17:50:21.741Z] info: POST /api/auth/login - 21ms
+[2025-12-13T17:52:21.000Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:53:12.485Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:53:27.575Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:54:42.802Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:55:34.932Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:56:52.946Z] info: POST /api/auth/login - 15ms
+[2025-12-13T17:57:17.185Z] info: POST /api/auth/login - 16ms
+[2025-12-13T17:58:52.178Z] error: Invalid refresh token
+[2025-12-13T17:58:52.179Z] info: POST /api/auth/refresh - 7ms
+[2025-12-13T17:59:40.144Z] error: Invalid refresh token
+[2025-12-13T17:59:40.144Z] info: POST /api/auth/refresh - 6ms
+[2025-12-13T17:59:51.574Z] error: Invalid refresh token
+[2025-12-13T17:59:51.575Z] info: POST /api/auth/refresh - 6ms
+[2025-12-13T18:00:07.847Z] error: Invalid refresh token
+[2025-12-13T18:00:07.847Z] info: POST /api/auth/refresh - 5ms
+[2025-12-13T18:02:27.411Z] error: Invalid refresh token
+[2025-12-13T18:02:27.412Z] info: POST /api/auth/refresh - 7ms
+[2025-12-13T18:09:55.128Z] error: Invalid refresh token
+[2025-12-13T18:09:55.128Z] info: POST /api/auth/refresh - 6ms
+[2025-12-13T18:10:15.317Z] error: Invalid refresh token
+[2025-12-13T18:10:15.318Z] info: POST /api/auth/refresh - 6ms
+[2025-12-13T18:10:21.437Z] error: Invalid refresh token
+[2025-12-13T18:10:21.438Z] info: POST /api/auth/refresh - 6ms
+[2025-12-13T18:10:43.257Z] error: Invalid refresh token
+[2025-12-13T18:10:43.258Z] info: POST /api/auth/refresh - 7ms
+[2025-12-13T18:11:20.160Z] info: POST /api/auth/login - 13ms
+[2025-12-13T18:12:06.679Z] info: POST /api/auth/login - 17ms
+[2025-12-13T18:12:23.819Z] info: POST /api/auth/refresh - 1ms
+[2025-12-13T18:15:15.759Z] info: POST /api/auth/refresh - 22ms
+[2025-12-13T18:15:50.702Z] info: POST /api/auth/login - 17ms
+[2025-12-13T18:15:52.325Z] info: POST /api/auth/login - 3ms
+[2025-12-13T18:15:52.326Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:17:02.107Z] info: POST /api/auth/login - 25ms
+[2025-12-13T18:17:02.108Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:17:53.464Z] info: POST /api/auth/login - 24ms
+[2025-12-13T18:18:27.604Z] info: POST /api/auth/login - 26ms
+[2025-12-13T18:18:43.419Z] info: POST /api/auth/login - 50ms
+[2025-12-13T18:19:14.562Z] info: POST /api/auth/login - 57ms
+[2025-12-13T18:19:27.479Z] info: POST /api/auth/refresh - 30ms
+[2025-12-13T18:19:54.353Z] info: POST /api/auth/refresh - 2ms
+[2025-12-13T18:22:11.642Z] info: POST /api/auth/refresh - 49ms
+[2025-12-13T18:30:49.877Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:31:21.135Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:33:31.138Z] info: GET /api/auth/profile - 3ms
+[2025-12-13T18:35:33.651Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:35:33.653Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:35:44.701Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:35:44.703Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:36:47.240Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:36:47.241Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:37:40.019Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:37:40.021Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:38:19.368Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:38:19.369Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:38:37.554Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:38:37.556Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2025-12-13T18:38:55.351Z] info: POST /api/auth/login - 56ms
+[2025-12-13T18:38:57.919Z] info: POST /api/auth/login - 7ms
+[2025-12-13T18:39:09.974Z] info: GET /api/auth/profile - 1ms
+[2025-12-13T18:39:26.312Z] info: GET /api/auth/profile - 2ms
+[2025-12-13T18:45:50.957Z] info: GET /api/auth/profile - 1ms

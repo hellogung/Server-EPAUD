@@ -4,7 +4,7 @@ import { AuthService } from "./auth.service";
 import { HTTPException } from "hono/http-exception";
 import { ZodError } from "zod";
 import { WebResponse } from "../../type/WebResponse.type";
-import { setCookie } from "hono/cookie"
+import { getCookie, setCookie } from "hono/cookie"
 import { Config } from "../../config";
 
 export const AuthController = (service: AuthService) => ({
@@ -36,34 +36,59 @@ export const AuthController = (service: AuthService) => ({
 
             const data = await service.login(validate)
 
+            // TODO: Store Refresh Token into HTTP Only Cookie
+            setCookie(c, "refresh_token", data.refresh_token, {
+                httpOnly: true,
+                secure: Config.IS_PRODUCTION,
+                path: "/api/auth/refresh",
+                maxAge: 15 * 60 * 60 * 24 // 15 Hari
+            })
+
             const response: WebResponse<any> = {
                 message: "User berhasil login.",
-                data: data,
+                data: {
+                    access_token: data.access_token,
+                }
             }
-
-            // Kenapa pake ini, karena ada Bug Hono tidak bisa set Cookie 2 kali
-            // c.header('Set-Cookie', `access_token=${data.access_token}; HttpOnly; ${Config.IS_PRODUCTION ? 'Secure;' : ''} SameSite=${Config.IS_PRODUCTION ? 'Strict' : 'Lax'}; Path=/; Max-Age=${Config.EXPIRED_ACCESS_TOKEN * 60}`, { append: true })
-            // c.header('Set-Cookie', `refresh_token=${data.refresh_token}; HttpOnly; ${Config.IS_PRODUCTION ? 'Secure;' : ''} SameSite=${Config.IS_PRODUCTION ? 'Strict' : 'Lax'}; Path=/; Max-Age=${Config.EXPIRED_REFRESH_TOKEN * 60 * 60 * 24}`, { append: true })
-
-            // Tidak jadi pake httpOnly Cookie karena mau pake Authorization Bearer
 
             return c.json(response)
         } catch (error) {
             if (error instanceof HTTPException) {
-                return c.json({ message: error.message })
+                return c.json({ message: error.message }, error.status)
             } else if (error instanceof ZodError) {
                 return c.json({ message: error.message })
             }
         }
     },
+    refresh_token: async (c: Context) => {
+        const refresh_token = getCookie(c, "refresh_token")
 
-    verify: async (c: Context) => {
-        return c.json({
-            message: "Success"
-        })
+        if (!refresh_token) {
+            return c.json({ message: "Unauthenticated" }, 401)
+        }
+        const access_token = await service.refresh_token(refresh_token)
+
+        return c.json({ access_token: access_token })
+    },
+
+    profile: async (c: Context) => {
+        try {
+            const user = c.get("user")
+
+            if (!user) throw new HTTPException(404, { message: "User not Found" })
+
+            const response: WebResponse<any> = {
+                message: "User berhasil login.",
+                data: { user }
+            }
+
+            return c.json(response)
+        } catch (error) {
+            if (error instanceof HTTPException) {
+                return c.json({ message: error.message }, error.status)
+            }
+
+            return c.json({ error })
+        }
     }
-
-    // profile: async (c: Context) => {
-
-    // }
 })

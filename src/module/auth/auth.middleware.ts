@@ -4,6 +4,8 @@ import { Config } from "../../config";
 import type { JWTPayload } from "hono/utils/jwt/types";
 import JWTHelper from "../../helper/jwt";
 import RedisClient from "../../config/redis";
+import { getCookie } from "hono/cookie";
+import { HTTPException } from "hono/http-exception";
 
 class AuthMiddleware {
     static async check(c: Context, next: Next) {
@@ -20,25 +22,7 @@ class AuthMiddleware {
         try {
             const payload: JWTPayload = await verify(token, Config.ACCESS_SECRET_KEY as string)
 
-            if (!payload) return c.json({ message: "Unathorized" }, 401)
-
-            const cureent = Math.floor(Date.now() / 1000)
-            if (payload.exp! < cureent) {
-                // ! HARUSNYA DIBUAT API REFRESH TOKEN
-                const redis = await RedisClient.getInstance()
-                const refresh_token = await redis.get(`refresh:${payload.username}`) as string
-                const access_token = await JWTHelper.GenerateAccessToken(refresh_token, {
-                    full_name: payload.full_name as string,
-                    username: payload.username as string,
-                    role: payload.role as string
-                })
-
-                await redis.setEx(
-                    `access:${payload.username}`,
-                    Config.EXPIRED_ACCESS_TOKEN * 60,
-                    access_token
-                )
-            }
+            if (!payload) throw new HTTPException(401, { message: "Token Invalid" })
 
             // Simpan payload ke context
             c.set("user", {
@@ -49,8 +33,20 @@ class AuthMiddleware {
             })
 
             await next()
-        } catch (error) {
-            return c.json({ message: "Invalid or expired token" }, 401);
+        } catch (err) {
+
+            if (err instanceof HTTPException) {
+                return c.json({ message: err.message }, err.status)
+            }
+
+            const error = err instanceof Error ? err : new Error
+
+            if (error.message.includes("jwt expired")) {
+                // Cek jika token expired
+                return c.json({ message: "Token expired" }, 401)
+            } else {
+                return c.json(error)
+            }
         }
     }
 

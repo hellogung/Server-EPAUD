@@ -10,11 +10,9 @@ export const AuthRoute = () => {
 
     app.post("register", controller.register)
     app.post("login", controller.login)
-    app.get("verify",
-        AuthMiddleware.check,
-        AuthMiddleware.role("superadmin"),
-        controller.verify)
-    // app.get("profile/:id", controller.profile)
+    app.post("refresh", controller.refresh_token)
+
+    app.get("profile", AuthMiddleware.check ,controller.profile)
 
     return app
 }

@@ -1,10 +1,11 @@
-import { verify } from "hono/jwt";
+import { decode, verify } from "hono/jwt";
 import { Auth, CreateAuth } from "../../db/schema";
 import { IAuthRepository } from "./IAuthRepository";
 import { Config } from "../../config";
-import type { JWTPayload } from "hono/utils/jwt/types";
+import { JwtPayloadRequiresAud, type JWTPayload } from "hono/utils/jwt/types";
 import RedisClient from "../../config/redis";
 import JWTHelper from "../../helper/jwt";
+import { HTTPException } from "hono/http-exception";
 
 export class AuthService {
     constructor(private readonly repo: IAuthRepository) { }
@@ -22,6 +23,10 @@ export class AuthService {
     async login(data: { username: string, password: string }): Promise<{ access_token: string, refresh_token: string }> {
         const user = await this.repo.login(data)
 
+        if(!user){
+            throw new HTTPException(401, { message: "Username/Password Invalid"})
+        }
+
         const refresh_token = await JWTHelper.GenerateRefreshToken(user.id)
         const access_token = await JWTHelper.GenerateAccessToken(refresh_token, {
             full_name: user.full_name,
@@ -32,30 +37,40 @@ export class AuthService {
         // Save token into Redis
         const redis = await RedisClient.getInstance()
         await redis.setEx(
-            `refresh:${user.username}`,
+            `refresh:${user.id}`,
             Config.EXPIRED_REFRESH_TOKEN * 60 * 60 * 24,
             refresh_token
-        )
-
-        await redis.setEx(
-            `access:${user.username}`,
-            Config.EXPIRED_ACCESS_TOKEN * 60,
-            access_token
         )
 
         return { access_token, refresh_token }
     }
 
-    async verify(token: string): Promise<JWTPayload> {
-        const decode = await verify(token, Config.ACCESS_SECRET_KEY as string)
-        return decode
+    async refresh_token(token: string): Promise<string> {
+        type JwtPayloadCustom = {
+            username: string
+            role: string
+            full_name: string
+        }
+
+        const token_verified = await verify(token, Config.REFRESH_SECRET_KEY as string)
+        const payload = token_verified // as JWTPayload & JwtPayloadCustom
+        
+        const redis = await RedisClient.getInstance()
+        const saved_token = await redis.get(`refresh:${payload.sub}`)
+        
+        if (saved_token !== token) {
+            throw new Error("Invalid refresh token")
+        }
+        // const payload = decoded.payload as JWTPayload & JwtPayloadCustom
+
+        const user = await this.repo.profile(payload.sub as string)
+
+        const new_token = await JWTHelper.GenerateAccessToken(token, {
+            username: user.username,
+            role: user.role,
+            full_name: user.full_name
+        })
+
+        return new_token
     }
-
-    // async profile(id: string): Promise<boolean> {
-
-    // }
-
-    // async logout(id: number): Promise<string> {
-    //     return await this.repo.logout(id)
-    // }
 }
