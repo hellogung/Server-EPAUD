@@ -99,3 +99,6 @@
 [2025-12-13T18:37:40.021Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
 [2025-12-13T18:38:19.369Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
 [2025-12-13T18:38:37.556Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-12T08:01:22.848Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-12T08:03:02.455Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-12T08:03:19.031Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
