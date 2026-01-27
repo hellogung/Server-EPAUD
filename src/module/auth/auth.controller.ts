@@ -48,6 +48,7 @@ export const AuthController = (service: AuthService) => ({
                 message: "User berhasil login.",
                 data: {
                     access_token: data.access_token,
+                    user: data.user
                 }
             }
 

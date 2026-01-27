@@ -20,11 +20,26 @@ export class AuthService {
         return await this.repo.register(data)
     }
 
-    async login(data: { username: string, password: string }): Promise<{ access_token: string, refresh_token: string }> {
-        const user = await this.repo.login(data)
+    async login(data: { username: string, password: string }): Promise<{
+        access_token: string,
+        refresh_token: string,
+        user: {
+            id: string,
+            full_name: string,
+            username: string,
+            role: string
+        }
+    }> {
+        const user: Auth | null = await this.repo.login(data)
 
-        if(!user){
-            throw new HTTPException(401, { message: "Username/Password Invalid"})
+        if (!user) {
+            throw new HTTPException(401, { message: "Username/Password Invalid" })
+        }
+
+        const is_valid = await Bun.password.verify(data.password, user.password)
+        console.log(is_valid)
+        if (!is_valid) {
+            throw new HTTPException(401, { message: "Username/Password Invalid" })
         }
 
         const refresh_token = await JWTHelper.GenerateRefreshToken(user.id)
@@ -42,7 +57,14 @@ export class AuthService {
             refresh_token
         )
 
-        return { access_token, refresh_token }
+        return {
+            access_token, refresh_token, user: {
+                id: user.id,
+                full_name: user.full_name,
+                username: user.username,
+                role: user.role
+            }
+        }
     }
 
     async refresh_token(token: string): Promise<string> {
@@ -54,10 +76,10 @@ export class AuthService {
 
         const token_verified = await verify(token, Config.REFRESH_SECRET_KEY as string)
         const payload = token_verified // as JWTPayload & JwtPayloadCustom
-        
+
         const redis = await RedisClient.getInstance()
         const saved_token = await redis.get(`refresh:${payload.sub}`)
-        
+
         if (saved_token !== token) {
             throw new Error("Invalid refresh token")
         }

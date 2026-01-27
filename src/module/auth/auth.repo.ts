@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../../config/database";
 import { Auth, AuthSchema, CreateAuth } from "../../db/schema";
 import { IAuthRepository } from "./IAuthRepository";
@@ -16,8 +16,8 @@ export class AuthRepository implements IAuthRepository {
         return user
     }
 
-    async save_token(username:string, token: string): Promise<boolean> {
-        await this.DBClient.update(AuthSchema).set({token: token}).where(eq(AuthSchema.username, username)).returning()
+    async save_token(username: string, token: string): Promise<boolean> {
+        await this.DBClient.update(AuthSchema).set({ token: token }).where(eq(AuthSchema.username, username)).returning()
         return true
     }
 
@@ -25,6 +25,4 @@ export class AuthRepository implements IAuthRepository {
         const [user] = await this.DBClient.select().from(AuthSchema).where(eq(AuthSchema.id, id))
         return user
     }
-
-
 }
