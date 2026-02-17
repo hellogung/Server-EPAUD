@@ -1,28 +1,35 @@
-import { and, eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { db } from "../../config/database";
-import { Auth, AuthSchema, CreateAuth } from "../../db/schema";
+import { Auth, AuthSchema, CreateAuth } from "../../db/auth.schema";
 import { IAuthRepository } from "./IAuthRepository";
 
 export class AuthRepository implements IAuthRepository {
-    constructor(private readonly DBClient = db) { }
+    constructor(private readonly DBClient = db) {}
 
     async register(data: CreateAuth): Promise<Auth> {
         const [user] = await this.DBClient.insert(AuthSchema).values(data).returning()
         return user
     }
 
-    async login(data: { username: string; password: string; }): Promise<Auth> {
-        const [user] = await this.DBClient.select().from(AuthSchema).where(eq(AuthSchema.username, data.username))
-        return user
-    }
-
-    async save_token(username: string, token: string): Promise<boolean> {
-        await this.DBClient.update(AuthSchema).set({ token: token }).where(eq(AuthSchema.username, username)).returning()
-        return true
-    }
-
-    async profile(id: string): Promise<Auth> {
+    async findById(id: string): Promise<Auth | null> {
         const [user] = await this.DBClient.select().from(AuthSchema).where(eq(AuthSchema.id, id))
-        return user
+        return user || null
+    }
+
+    async findByIdentifier(identifier: string): Promise<Auth | null> {
+        const [user] = await this.DBClient.select().from(AuthSchema).where(
+            or(
+                eq(AuthSchema.username, identifier),
+                eq(AuthSchema.email, identifier),
+                eq(AuthSchema.phone, identifier)
+            )
+        )
+        return user || null
+    }
+
+    async setVerified(id: string): Promise<void> {
+        await this.DBClient.update(AuthSchema)
+            .set({ is_verified: true })
+            .where(eq(AuthSchema.id, id))
     }
 }

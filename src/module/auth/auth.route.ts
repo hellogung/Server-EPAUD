@@ -5,14 +5,19 @@ import AuthMiddleware from "./auth.middleware"
 
 export const AuthRoute = () => {
     const app = new Hono()
+    const c = AuthController(container.authService, container.schoolService, container.userSchoolService)
 
-    const controller = AuthController(container.authService)
+    // Public routes
+    app.post("/register", c.register)
+    app.post("/send-verification", c.sendVerification)
+    app.post("/verify", c.verify)
+    app.post("/login", c.login)
+    app.post("/refresh", c.refreshToken)
 
-    app.post("register", controller.register)
-    app.post("login", controller.login)
-    app.post("refresh", controller.refresh_token)
-
-    app.get("profile", AuthMiddleware.check ,controller.profile)
+    // Protected routes
+    app.delete("/logout", AuthMiddleware.check, c.logout)
+    app.get("/verify-token", AuthMiddleware.check, c.verifyAccessToken)
+    app.get("/profile", AuthMiddleware.check, c.profile)
 
     return app
 }

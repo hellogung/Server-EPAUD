@@ -105,3 +105,12 @@
 [2026-01-22T11:12:42.947Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
 [2026-01-22T11:13:51.196Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
 [2026-01-22T11:13:53.040Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:31:04.563Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:31:04.566Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:31:37.538Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:31:37.540Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:32:18.000Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:32:18.001Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:35:00.895Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-01-28T08:35:44.754Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
+[2026-02-17T22:28:10.515Z] error: undefined is not an object (evaluating 'error.errors.map')

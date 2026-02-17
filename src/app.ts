@@ -6,6 +6,7 @@ import { ZodError } from 'zod'
 import appRoute from './routes';
 import { requestLogger } from './middleware/logger.middleware';
 import { logger } from './config/logger';
+import { Config } from './config';
 
 const app = new Hono()
 
@@ -19,7 +20,12 @@ app.use("/public/*", serveStatic({
 }))
 // app.use('*', logger());
 app.use('*', requestLogger())
-app.use('*', cors());
+app.use('*', cors({
+    origin: Config.CORS_ORIGINS,
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+}))
 
 // Health check
 app.get('/', (c) => {

@@ -1,95 +1,146 @@
 import { Context } from "hono";
 import { AuthValidator } from "./auth.validator";
 import { AuthService } from "./auth.service";
+import { SchoolService } from "../school/school.service";
+import { UserSchoolService } from "../user_school/user_school.service";
 import { HTTPException } from "hono/http-exception";
 import { ZodError } from "zod";
-import { WebResponse } from "../../type/WebResponse.type";
-import { getCookie, setCookie } from "hono/cookie"
+import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { Config } from "../../config";
 
-export const AuthController = (service: AuthService) => ({
+const handleError = (c: Context, error: unknown) => {
+    if (error instanceof HTTPException) {
+        return c.json({ message: error.message }, error.status)
+    }
+    if (error instanceof ZodError) {
+        const msg = error.errors.map(e => e.message).join(", ")
+        return c.json({ message: msg }, 400)
+    }
+    return c.json({ message: "Internal server error" }, 500)
+}
+
+export const AuthController = (
+    service: AuthService,
+    schoolService: SchoolService,
+    userSchoolService: UserSchoolService,
+) => ({
     register: async (c: Context) => {
         try {
             const body = await c.req.json()
-            const validate = AuthValidator.register().parse(body)
+            const data = AuthValidator.register().parse(body)
 
-            const data = await service.register(validate)
+            const school = await schoolService.create({ school_name: data.nama_sekolah })
+            const username = data.email || data.phone!
+            const user = await service.register({
+                full_name: data.nama_kepala_sekolah,
+                username,
+                email: data.email,
+                phone: data.phone,
+                password: data.password,
+                role: "user",
+            })
+            await userSchoolService.create({
+                user_id: user.id,
+                school_id: school.id,
+                role: "kepala_sekolah",
+            })
 
-            const response: WebResponse<any> = {
-                message: "User berhasil ditambahkan.",
-                data: data,
-            }
+            // Auto-send verification
+            await service.sendVerification(user.id)
 
-            return c.json(response)
+            return c.json({
+                message: "Registrasi berhasil. Silakan verifikasi akun Anda.",
+                data: { user_id: user.id, school_id: school.id }
+            }, 201)
         } catch (error) {
-            if (error instanceof HTTPException) {
-                return c.json({ message: error.message })
-            } else if (error instanceof ZodError) {
-                return c.json({ message: error.message })
-            }
+            return handleError(c, error)
         }
     },
+
+    sendVerification: async (c: Context) => {
+        try {
+            const body = await c.req.json()
+            const { user_id } = AuthValidator.sendVerification().parse(body)
+            await service.sendVerification(user_id)
+            return c.json({ message: "Kode verifikasi telah dikirim" })
+        } catch (error) {
+            return handleError(c, error)
+        }
+    },
+
+    verify: async (c: Context) => {
+        try {
+            const body = await c.req.json()
+            const { user_id, code } = AuthValidator.verify().parse(body)
+            await service.verifyAccount(user_id, code)
+            return c.json({ message: "Akun berhasil diverifikasi" })
+        } catch (error) {
+            return handleError(c, error)
+        }
+    },
+
     login: async (c: Context) => {
         try {
             const body = await c.req.json()
-            const validate = AuthValidator.login().parse(body)
+            const { identifier, password } = AuthValidator.login().parse(body)
+            const result = await service.login(identifier, password)
 
-            const data = await service.login(validate)
-
-            // TODO: Store Refresh Token into HTTP Only Cookie
-            setCookie(c, "refresh_token", data.refresh_token, {
+            setCookie(c, "refresh_token", result.refresh_token, {
                 httpOnly: true,
                 secure: Config.IS_PRODUCTION,
                 path: "/api/auth/refresh",
-                maxAge: 15 * 60 * 60 * 24 // 15 Hari
+                maxAge: 15 * 24 * 60 * 60
             })
 
-            const response: WebResponse<any> = {
-                message: "User berhasil login.",
-                data: {
-                    access_token: data.access_token,
-                    user: data.user
-                }
-            }
-
-            return c.json(response)
+            return c.json({
+                message: "Login berhasil",
+                data: { access_token: result.access_token, user: result.user }
+            })
         } catch (error) {
-            if (error instanceof HTTPException) {
-                return c.json({ message: error.message }, error.status)
-            } else if (error instanceof ZodError) {
-                return c.json({ message: error.message })
-            }
+            return handleError(c, error)
         }
     },
-    refresh_token: async (c: Context) => {
-        const refresh_token = getCookie(c, "refresh_token")
 
-        if (!refresh_token) {
-            return c.json({ message: "Unauthenticated" }, 401)
+    logout: async (c: Context) => {
+        try {
+            const { id } = c.get("user")
+            await service.logout(id)
+            deleteCookie(c, "refresh_token")
+            return c.json({ message: "Logout berhasil" })
+        } catch (error) {
+            return handleError(c, error)
         }
-        const access_token = await service.refresh_token(refresh_token)
+    },
 
-        return c.json({ access_token: access_token })
+    verifyAccessToken: async (c: Context) => {
+        try {
+            const { id } = c.get("user")
+            const valid = await service.verifyToken(id)
+            if (!valid) return c.json({ message: "Token invalid" }, 401)
+            return c.json({ valid: true })
+        } catch (error) {
+            return handleError(c, error)
+        }
+    },
+
+    refreshToken: async (c: Context) => {
+        try {
+            const token = getCookie(c, "refresh_token")
+            if (!token) return c.json({ message: "Unauthenticated" }, 401)
+            const access_token = await service.refreshToken(token)
+            return c.json({ access_token })
+        } catch (error) {
+            return handleError(c, error)
+        }
     },
 
     profile: async (c: Context) => {
         try {
             const user = c.get("user")
-
-            if (!user) throw new HTTPException(404, { message: "User not Found" })
-
-            const response: WebResponse<any> = {
-                message: "User berhasil login.",
-                data: { user }
-            }
-
-            return c.json(response)
+            if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
+            return c.json({ data: user })
         } catch (error) {
-            if (error instanceof HTTPException) {
-                return c.json({ message: error.message }, error.status)
-            }
-
-            return c.json({ error })
+            return handleError(c, error)
         }
     }
 })

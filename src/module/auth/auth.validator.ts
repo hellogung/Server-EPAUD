@@ -1,25 +1,36 @@
 import z from "zod"
 
 export class AuthValidator {
-    public static register() {
+    static register() {
         return z.object({
-            full_name: z.string().min(1),
-            username: z.string().min(1),
-            password: z.string().min(1),
-            role: z.string().min(1).default("user")
+            nama_sekolah: z.string().min(1, "Nama sekolah wajib diisi"),
+            nama_kepala_sekolah: z.string().min(1, "Nama kepala sekolah wajib diisi"),
+            email: z.string().email("Format email tidak valid").optional(),
+            phone: z.string().min(10).max(15).optional(),
+            password: z.string().min(6, "Password minimal 6 karakter"),
+        }).refine(
+            (data) => data.email || data.phone,
+            { message: "Email atau nomor telepon wajib diisi", path: ["email"] }
+        )
+    }
+
+    static sendVerification() {
+        return z.object({
+            user_id: z.string().uuid()
         })
     }
 
-    public static login() {
+    static verify() {
         return z.object({
-            username: z.string().min(1),
-            password: z.string().min(1)
+            user_id: z.string().uuid(),
+            code: z.string().length(6, "Kode verifikasi harus 6 digit")
         })
     }
 
-    public static idParam() {
+    static login() {
         return z.object({
-            id: z.string().min(1)
+            identifier: z.string().min(1, "Username/email/phone wajib diisi"),
+            password: z.string().min(1, "Password wajib diisi")
         })
     }
 }

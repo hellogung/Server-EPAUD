@@ -54,8 +54,6 @@ class AuthMiddleware {
         return async (c: Context, next: Next) => {
             const user = c.get("user")
 
-            console.log(user.role)
-
             if (!user) {
                 return c.json({
                     message: "Unauthorized: User tidak ditemukan"
