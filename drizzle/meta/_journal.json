@@ -43,6 +43,13 @@
       "when": 1771343747086,
       "tag": "0005_modern_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772268955706,
+      "tag": "0006_special_the_professor",
+      "breakpoints": true
     }
   ]
 }

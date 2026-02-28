@@ -114,3 +114,8 @@
 [2026-01-28T08:35:00.895Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
 [2026-01-28T08:35:44.754Z] error: Context is not finalized. Did you forget to return a Response object or `await next()`?
 [2026-02-17T22:28:10.515Z] error: undefined is not an object (evaluating 'error.errors.map')
+[2026-02-28T08:40:44.153Z] error: undefined is not an object (evaluating 'error.errors.map')
+[2026-02-28T08:42:36.466Z] error: undefined is not an object (evaluating 'error.errors.map')
+[2026-02-28T08:45:53.365Z] error: undefined is not an object (evaluating 'error.errors.map')
+[2026-02-28T08:47:11.381Z] error: undefined is not an object (evaluating 'error.errors.map')
+[2026-02-28T08:50:50.997Z] error: undefined is not an object (evaluating 'error.errors.map')

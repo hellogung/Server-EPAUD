@@ -4,20 +4,8 @@ import { AuthService } from "./auth.service";
 import { SchoolService } from "../school/school.service";
 import { UserSchoolService } from "../user_school/user_school.service";
 import { HTTPException } from "hono/http-exception";
-import { ZodError } from "zod";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { Config } from "../../config";
-
-const handleError = (c: Context, error: unknown) => {
-    if (error instanceof HTTPException) {
-        return c.json({ message: error.message }, error.status)
-    }
-    if (error instanceof ZodError) {
-        const msg = error.errors.map(e => e.message).join(", ")
-        return c.json({ message: msg }, 400)
-    }
-    return c.json({ message: "Internal server error" }, 500)
-}
 
 export const AuthController = (
     service: AuthService,
@@ -53,7 +41,7 @@ export const AuthController = (
                 data: { user_id: user.id, school_id: school.id }
             }, 201)
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -64,7 +52,7 @@ export const AuthController = (
             await service.sendVerification(user_id)
             return c.json({ message: "Kode verifikasi telah dikirim" })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -75,7 +63,7 @@ export const AuthController = (
             await service.verifyAccount(user_id, code)
             return c.json({ message: "Akun berhasil diverifikasi" })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -97,7 +85,7 @@ export const AuthController = (
                 data: { access_token: result.access_token, user: result.user }
             })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -108,7 +96,7 @@ export const AuthController = (
             deleteCookie(c, "refresh_token")
             return c.json({ message: "Logout berhasil" })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -119,7 +107,7 @@ export const AuthController = (
             if (!valid) return c.json({ message: "Token invalid" }, 401)
             return c.json({ valid: true })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -130,7 +118,7 @@ export const AuthController = (
             const access_token = await service.refreshToken(token)
             return c.json({ access_token })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     },
 
@@ -140,7 +128,7 @@ export const AuthController = (
             if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
             return c.json({ data: user })
         } catch (error) {
-            return handleError(c, error)
+            return c.json({message: error})
         }
     }
 })
