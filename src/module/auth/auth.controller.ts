@@ -114,6 +114,7 @@ export const AuthController = (
     refreshToken: async (c: Context) => {
         try {
             const token = getCookie(c, "refresh_token")
+            console.log(token)
             if (!token) return c.json({ message: "Unauthenticated" }, 401)
             const access_token = await service.refreshToken(token)
             return c.json({ access_token })

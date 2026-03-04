@@ -9,6 +9,7 @@ export const TeacherRoute = () => {
 
     // Protected routes - requires authentication
     app.post("/", AuthMiddleware.check, c.create)
+    app.get("/", AuthMiddleware.check, c.getAll)
 
     return app
 }
