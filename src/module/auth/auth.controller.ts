@@ -72,6 +72,7 @@ export const AuthController = (
             const body = await c.req.json()
             const { identifier, password } = AuthValidator.login().parse(body)
             const result = await service.login(identifier, password)
+            console.log(body)
 
             setCookie(c, "refresh_token", result.refresh_token, {
                 httpOnly: true,
