@@ -1,6 +1,7 @@
 import { Context } from "hono";
 import { createSchoolValidation, updateSchoolValidation } from "./school.validator";
 import { SchoolService } from "./school.service";
+import {handleError} from "../../helper/handleError";
 
 
 export const SchoolController = (service: SchoolService) => ({
@@ -33,7 +34,7 @@ export const SchoolController = (service: SchoolService) => ({
             const school = await service.update(id, data)
             return c.json({ message: "Data sekolah berhasil diperbarui", data: school })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     }
 })

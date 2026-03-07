@@ -25,6 +25,7 @@ class RedisClient {
 
             client.on("end", () => {
                 console.warn("⚠️ Redis connection closed");
+                RedisClient.instance = null; // tambahkan ini
             });
 
             try {
