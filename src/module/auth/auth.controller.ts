@@ -6,6 +6,7 @@ import { UserSchoolService } from "../user_school/user_school.service";
 import { HTTPException } from "hono/http-exception";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { Config } from "../../config";
+import {handleError} from "../../helper/handleError";
 
 export const AuthController = (
     service: AuthService,
@@ -72,13 +73,12 @@ export const AuthController = (
             const body = await c.req.json()
             const { identifier, password } = AuthValidator.login().parse(body)
             const result = await service.login(identifier, password)
-            console.log(body)
 
             setCookie(c, "refresh_token", result.refresh_token, {
                 httpOnly: true,
                 secure: Config.IS_PRODUCTION,
                 path: "/api/auth/refresh",
-                maxAge: 15 * 24 * 60 * 60
+                maxAge: 15 * 24 * 60 * 60 // 15 days
             })
 
             return c.json({
@@ -115,12 +115,14 @@ export const AuthController = (
     refreshToken: async (c: Context) => {
         try {
             const token = getCookie(c, "refresh_token")
-            console.log(token)
-            if (!token) return c.json({ message: "Unauthenticated" }, 401)
+
+            if (!token) return c.json({ message: "No token found" }, 401)
+
             const access_token = await service.refreshToken(token)
+
             return c.json({ access_token })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 

@@ -19,19 +19,10 @@ class JWTHelper {
         return await sign(payload, Config.REFRESH_SECRET_KEY as string)
     }
 
-    static async GenerateAccessToken(token: string, data: {username: string, role: string, full_name: string}): Promise<string> {
-        const { payload } = decode(token) as { payload: dataType }
-
-        if (!payload) throw new Error("Invalid Token")
-
-        const cureent = Math.floor(Date.now() / 1000) // seconds
-        if (payload.exp < cureent) {
-            throw new Error("Refresh Token expired")
-        }
-
+    static async GenerateAccessToken(data: {id: string, username: string, role: string, full_name: string}): Promise<string> {
         // Generate Refresh Token
         const accessPayload : dataType = {
-            sub: payload.sub,
+            sub: data.id,
             full_name: data.full_name,
             username: data.username,
             role: data.role,

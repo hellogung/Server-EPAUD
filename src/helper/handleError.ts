@@ -1,14 +1,18 @@
-import { Context } from "hono";
-import {HTTPException} from "hono/http-exception";
-import {ZodError} from "zod";
+// helpers/error.helper.ts
 
-export const handleError = (c: Context, error: unknown) => {
-    if (error instanceof HTTPException) {
-        return c.json({ message: error.message }, error.status)
+import { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
+
+export function handleError(c: Context, err: unknown) {
+    if (err instanceof HTTPException) {
+        return c.json({ message: err.message }, err.status)
     }
-    if (error instanceof ZodError) {
-        const msg = error.errors.map(e => e.message).join(", ")
-        return c.json({ message: msg }, 400)
+
+    const error = err instanceof Error ? err : new Error(String(err))
+
+    if (error.message.includes("jwt expired")) {
+        return c.json({ message: "Token expired" }, 401)
     }
-    return c.json({ message: "Internal server error" }, 500)
+
+    return c.json({ message: error.message }, 500)
 }

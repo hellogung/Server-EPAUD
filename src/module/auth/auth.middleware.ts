@@ -1,5 +1,5 @@
 import { Context, Next } from "hono";
-import { verify } from "hono/jwt";
+import {decode, verify} from "hono/jwt";
 import { Config } from "../../config";
 import type { JWTPayload } from "hono/utils/jwt/types";
 import JWTHelper from "../../helper/jwt";
@@ -20,9 +20,20 @@ class AuthMiddleware {
         const token = authorization.split(" ")[1]
 
         try {
+            const decoded = decode(token)
+            // Cek di redis apakah ada access token
+            const redis = await RedisClient.getInstance()
+            const blacklist = await redis.get(`access:${decoded.payload.sub}`);
+
+            // Handle jika token tidak ada di redis
+            if(token != blacklist) {
+                return c.json({message: "Token has been revoked"}, 401)
+            }
+
+            // Jika ada di cookie, verify cookie
             const payload: JWTPayload = await verify(token, Config.ACCESS_SECRET_KEY as string)
 
-            if (!payload) throw new HTTPException(401, { message: "Token Invalid" })
+            if (!payload) return c.json({message: "Token invalid"}, 401)
 
             // Simpan payload ke context
             c.set("user", {
