@@ -16,7 +16,7 @@ class JWTHelper {
             exp: Math.floor(Date.now() / 1000) + 60 * Config.EXPIRED_REFRESH_TOKEN
         }
 
-        return await sign(payload, Config.REFRESH_SECRET_KEY as string)
+        return await sign(payload, Config.REFRESH_SECRET_KEY as string, "HS256")
     }
 
     static async GenerateAccessToken(data: {id: string, username: string, role: string, full_name: string}): Promise<string> {
@@ -29,7 +29,7 @@ class JWTHelper {
             exp: Math.floor(Date.now() / 1000) + 60 * Config.EXPIRED_ACCESS_TOKEN
         }
 
-        return await sign(accessPayload, Config.ACCESS_SECRET_KEY as string)
+        return await sign(accessPayload, Config.ACCESS_SECRET_KEY as string, "HS256")
     }
 }
 

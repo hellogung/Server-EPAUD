@@ -103,6 +103,7 @@ export class AuthService {
     async logout(id: string): Promise<void> {
         const redis = await RedisClient.getInstance()
         await redis.del(`refresh:${id}`)
+        await redis.del(`access:${id}`)
     }
 
     async verifyToken(id: string): Promise<boolean> {
