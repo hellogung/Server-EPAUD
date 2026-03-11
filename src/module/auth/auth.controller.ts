@@ -16,10 +16,13 @@ export const AuthController = (
     register: async (c: Context) => {
         try {
             const body = await c.req.json()
+            console.log(body)
             const data = AuthValidator.register().parse(body)
 
             const school = await schoolService.create({ school_name: data.nama_sekolah })
             const username = data.email || data.phone!
+
+            console.log(body)
             const user = await service.register({
                 full_name: data.nama_kepala_sekolah,
                 username,
@@ -42,7 +45,7 @@ export const AuthController = (
                 data: { user_id: user.id, school_id: school.id }
             }, 201)
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -53,7 +56,7 @@ export const AuthController = (
             await service.sendVerification(user_id)
             return c.json({ message: "Kode verifikasi telah dikirim" })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -64,7 +67,7 @@ export const AuthController = (
             await service.verifyAccount(user_id, code)
             return c.json({ message: "Akun berhasil diverifikasi" })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -86,7 +89,7 @@ export const AuthController = (
                 data: { access_token: result.access_token, user: result.user }
             })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -97,7 +100,7 @@ export const AuthController = (
             deleteCookie(c, "refresh_token")
             return c.json({ message: "Logout berhasil" })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -108,7 +111,7 @@ export const AuthController = (
             if (!valid) return c.json({ message: "Token invalid" }, 401)
             return c.json({ valid: true })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -132,7 +135,7 @@ export const AuthController = (
             if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
             return c.json({ data: user })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     }
 })

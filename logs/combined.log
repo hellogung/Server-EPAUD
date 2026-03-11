@@ -14889,3 +14889,17 @@
 [2026-03-07T17:46:17.591Z] info: POST /api/auth/login - 90ms
 [2026-03-07T17:46:31.480Z] info: DELETE /api/auth/logout - 3ms
 [2026-03-07T17:47:02.049Z] info: DELETE /api/auth/logout - 11ms
+[2026-03-08T07:51:29.414Z] info: POST /api/auth/register - 5ms
+[2026-03-08T07:52:10.516Z] info: POST /api/auth/register - 1ms
+[2026-03-08T07:52:58.648Z] info: POST /api/auth/register - 2ms
+[2026-03-08T07:53:09.930Z] info: POST /api/auth/register - 1ms
+[2026-03-08T07:54:11.182Z] info: POST /api/auth/register - 2ms
+[2026-03-08T07:54:58.334Z] info: POST /api/auth/register - 2ms
+[2026-03-08T07:55:19.301Z] info: POST /api/auth/register - 3ms
+[2026-03-08T07:57:09.085Z] info: [VERIFICATION] Code 312033 sent to spspaduceria@gmail.com
+[2026-03-08T07:57:09.090Z] info: POST /api/auth/register - 204ms
+[2026-03-08T08:07:14.819Z] info: POST /api/auth/login - 175ms
+[2026-03-08T08:08:48.622Z] info: [VERIFICATION] Code 472770 sent to spspaduceria@gmail.com
+[2026-03-08T08:08:48.623Z] info: POST /api/auth/send-verification - 124ms
+[2026-03-08T08:10:42.726Z] info: POST /api/auth/verify - 115ms
+[2026-03-08T08:11:16.665Z] info: POST /api/auth/login - 203ms

@@ -5,50 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764931511015,
-      "tag": "0000_modern_violations",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1765032859711,
-      "tag": "0001_wakeful_peter_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1771339711579,
-      "tag": "0002_same_senator_kelly",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1771340350478,
-      "tag": "0003_glossy_jasper_sitwell",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1771343256193,
-      "tag": "0004_bored_war_machine",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1771343747086,
-      "tag": "0005_modern_puppet_master",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1772268955706,
-      "tag": "0006_special_the_professor",
+      "when": 1773216736354,
+      "tag": "0000_amazing_surge",
       "breakpoints": true
     }
   ]

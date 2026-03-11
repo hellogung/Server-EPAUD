@@ -1,6 +1,7 @@
 import {TeacherService} from "./teacher.service";
 import {Context} from "hono";
 import {createTeacherValidation} from "./teacher.validator";
+import {handleError} from "../../helper/handleError";
 
 
 export const TeacherController = (service: TeacherService) => ({
@@ -15,7 +16,7 @@ export const TeacherController = (service: TeacherService) => ({
             }, 201)
         }
         catch(error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
     getAll: async (c: Context) => {
@@ -48,7 +49,7 @@ export const TeacherController = (service: TeacherService) => ({
             }, 200)
         }
         catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     }
 })

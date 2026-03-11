@@ -1,6 +1,6 @@
 import z from "zod";
 export const createTeacherValidation = z.object({
-    school_name: z.string().min(1),
+    school_id: z.string().min(1),
     id_attendance: z.string().min(1).optional(),
     name: z.string().min(1),
     address: z.string().min(3),

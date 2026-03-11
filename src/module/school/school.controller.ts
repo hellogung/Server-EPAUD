@@ -12,7 +12,7 @@ export const SchoolController = (service: SchoolService) => ({
             const school = await service.create(data)
             return c.json({ message: "Sekolah berhasil ditambahkan", data: { id: school.id } }, 201)
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
@@ -22,7 +22,7 @@ export const SchoolController = (service: SchoolService) => ({
             const school = await service.findById(id)
             return c.json({ data: school })
         } catch (error) {
-            return c.json({message: error})
+            return handleError(c, error)
         }
     },
 
