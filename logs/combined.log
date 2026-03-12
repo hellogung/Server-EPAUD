@@ -14903,3 +14903,16 @@
 [2026-03-08T08:08:48.623Z] info: POST /api/auth/send-verification - 124ms
 [2026-03-08T08:10:42.726Z] info: POST /api/auth/verify - 115ms
 [2026-03-08T08:11:16.665Z] info: POST /api/auth/login - 203ms
+[2026-03-12T06:52:51.903Z] info: POST /api/auth/login - 92ms
+[2026-03-12T06:53:47.344Z] info: [VERIFICATION] Code 514903 sent to spspaduceria@gmail.com
+[2026-03-12T06:53:47.346Z] info: POST /api/auth/register - 288ms
+[2026-03-12T06:54:00.798Z] info: POST /api/auth/login - 114ms
+[2026-03-12T06:54:27.283Z] info: [VERIFICATION] Code 431932 sent to spspaduceria@gmail.com
+[2026-03-12T06:54:27.285Z] info: POST /api/auth/send-verification - 23ms
+[2026-03-12T06:54:46.776Z] info: POST /api/auth/verify - 34ms
+[2026-03-12T06:54:50.919Z] info: POST /api/auth/login - 98ms
+[2026-03-12T07:19:05.251Z] info: POST /api/teacher - 7ms
+[2026-03-12T07:19:29.917Z] info: POST /api/teacher - 10ms
+[2026-03-12T07:19:49.545Z] info: POST /api/teacher - 46ms
+[2026-03-12T07:19:55.781Z] info: POST /api/auth/refresh - 89ms
+[2026-03-12T07:20:05.903Z] info: POST /api/teacher - 219ms

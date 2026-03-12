@@ -1,86 +1,81 @@
 import {db} from "../../config/database";
-import {CreateTeacher, Teacher, TeacherSchema} from "../../db/teacher.schema";
+import {Parent, ParentSchema} from "../../db/parent.schema";
 import {AuthSchema} from "../../db/auth.schema";
 import {eq, sql, SQL} from "drizzle-orm";
-import {ITeacherRepository, UpdateTeacherData, CreateTeacherData} from "./ITeacherRepository";
+import {IParentRepository, UpdateParentData, CreateParentData} from "./IParentRepository";
 import {generateUsername} from "../auth/auth.service";
 import {IAuthRepository} from "../auth/IAuthRepository";
 
-export class TeacherRepository implements ITeacherRepository {
+export class ParentRepository implements IParentRepository {
     constructor(
         private readonly DBClient = db,
         private readonly authRepo?: IAuthRepository
     ) {}
 
-    async create(data: CreateTeacherData): Promise<Teacher> {
+    async create(data: CreateParentData): Promise<Parent> {
         if (!this.authRepo) throw new Error("AuthRepository is required for create operation")
         
         return await this.DBClient.transaction(async (tx) => {
-            // Generate username from name
             const username = await generateUsername(data.name, this.authRepo!)
 
             const DEFAULT_PASSWORD = "@User123$"
-            
-            // Hash default password
             const hashedPassword = await Bun.password.hash(DEFAULT_PASSWORD, {algorithm: "bcrypt", cost: 10})
 
-            // 1. Create user with role "teacher"
+            // 1. Create user with role "parent"
             const [user] = await tx.insert(AuthSchema).values({
                 full_name: data.name,
                 username,
                 password: hashedPassword,
-                email: data.email,
-                phone: data.phone,
-                role: "teacher",
+                role: "parent",
                 is_verified: false
             }).returning()
 
-            // 2. Create teacher linked to the user
-            const [teacher] = await tx.insert(TeacherSchema).values({
+            // 2. Create parent linked to the user
+            const [parent] = await tx.insert(ParentSchema).values({
                 ...data,
                 user_id: user.id
             }).returning()
 
-            return teacher
+            return parent
         })
     }
 
-    async getAll({limit, offset, condition} : {limit: number, offset: number, condition: SQL<unknown> | undefined}): Promise<{data: Teacher[], total: {count: number}}> {
-        const teachers = await this.DBClient
+    async getAll({limit, offset, condition}: {limit: number, offset: number, condition: SQL<unknown> | undefined}): Promise<{data: Parent[], total: {count: number}}> {
+        const parents = await this.DBClient
             .select()
-            .from(TeacherSchema)
+            .from(ParentSchema)
             .where(condition)
             .limit(limit)
             .offset(offset)
 
         const [totalResult] = await this.DBClient
             .select({ count: sql<number>`count(*)` })
-            .from(TeacherSchema)
+            .from(ParentSchema)
             .where(condition)
 
-        return {data: teachers, total: totalResult}
+        return {data: parents, total: totalResult}
     }
 
-    async findById(id: string): Promise<Teacher | null> {
-        const [teacher] = await this.DBClient
+    async findById(id: string): Promise<Parent | null> {
+        const [parent] = await this.DBClient
             .select()
-            .from(TeacherSchema)
-            .where(eq(TeacherSchema.id, id))
-        return teacher || null
+            .from(ParentSchema)
+            .where(eq(ParentSchema.id, id))
+        return parent || null
     }
 
-    async update(id: string, data: UpdateTeacherData): Promise<Teacher> {
-        const [teacher] = await this.DBClient
-            .update(TeacherSchema)
+    async update(id: string, data: UpdateParentData): Promise<Parent> {
+        const [parent] = await this.DBClient
+            .update(ParentSchema)
             .set({ ...data, updatedAt: new Date() })
-            .where(eq(TeacherSchema.id, id))
+            .where(eq(ParentSchema.id, id))
             .returning()
-        return teacher
+        return parent
     }
 
     async delete(id: string): Promise<void> {
         await this.DBClient
-            .delete(TeacherSchema)
-            .where(eq(TeacherSchema.id, id))
+            .delete(ParentSchema)
+            .where(eq(ParentSchema.id, id))
     }
 }

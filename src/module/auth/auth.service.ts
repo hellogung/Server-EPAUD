@@ -9,6 +9,28 @@ import {generateVerificationCode, sendVerificationEmail, sendVerificationSMS} fr
 
 const VERIFICATION_TTL = 3 * 60 // 3 minutes in seconds
 
+// Shared function to generate unique username from name
+export async function generateUsername(name: string, repo: IAuthRepository): Promise<string> {
+    const baseUsername = name.replace(/\s+/g, '').toLowerCase()
+
+    const existingUsernames = await repo.findUsernamesByPrefix(baseUsername)
+
+    if (existingUsernames.length === 0) {
+        return baseUsername
+    }
+    
+    if (!existingUsernames.includes(baseUsername)) {
+        return baseUsername
+    }
+
+    let counter = 1
+    while (existingUsernames.includes(`${baseUsername}${counter}`)) {
+        counter++
+    }
+
+    return `${baseUsername}${counter}`
+}
+
 type RegisterData = {
     full_name: string
     username: string
@@ -90,8 +112,13 @@ export class AuthService {
         })
 
         const redis = await RedisClient.getInstance()
-        await redis.setEx(`refresh:${user.id}`, Config.EXPIRED_REFRESH_TOKEN * 60 * 60 * 24, refresh_token)
-        await redis.setEx(`access:${user.id}`, Config.EXPIRED_ACCESS_TOKEN * 60 * 60 * 24, access_token)
+        // Access token: 15 minutes (in seconds)
+        const accessTTL = Config.EXPIRED_ACCESS_TOKEN * 60
+        // Refresh token: 30 days (in seconds)
+        const refreshTTL = Config.EXPIRED_REFRESH_TOKEN * 24 * 60 * 60
+        
+        await redis.setEx(`refresh:${user.id}`, refreshTTL, refresh_token)
+        await redis.setEx(`access:${user.id}`, accessTTL, access_token)
 
         return {
             access_token,
@@ -143,8 +170,9 @@ export class AuthService {
             full_name: user.full_name
         })
 
-        // 3. Save new access token into redis
-        await redis.setEx(`access:${user.id}`, Config.EXPIRED_ACCESS_TOKEN * 60 * 60 * 24, access_token)
+        // 3. Save new access token into redis (15 minutes in seconds)
+        const accessTTL = Config.EXPIRED_ACCESS_TOKEN * 60
+        await redis.setEx(`access:${user.id}`, accessTTL, access_token)
 
         return access_token
     }

@@ -1,8 +1,6 @@
 import {date, pgEnum, pgTable, primaryKey, text, timestamp, uuid, varchar} from "drizzle-orm/pg-core";
 import {SchoolSchema} from "./school.schema";
-import {AuthSchema} from "./auth.schema";
-
-export const genderTypeEnum = pgEnum("gender_type", ["laki-laki", "perempuan"])
+import {AuthSchema, genderTypeEnum} from "./auth.schema";
 
 export const TeacherSchema = pgTable("teachers", {
         id: uuid().primaryKey().defaultRandom(),

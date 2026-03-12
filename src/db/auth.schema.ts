@@ -1,4 +1,4 @@
-import { boolean, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const AuthSchema = pgTable("users", {
     id: uuid().primaryKey().defaultRandom(),
@@ -15,3 +15,5 @@ export const AuthSchema = pgTable("users", {
 })
 export type Auth = typeof AuthSchema.$inferSelect
 export type CreateAuth = typeof AuthSchema.$inferInsert
+
+export const genderTypeEnum = pgEnum("gender_type", ["laki-laki", "perempuan"])

@@ -1,18 +1,17 @@
-import {TeacherService} from "./teacher.service";
+import {ParentService} from "./parent.service";
 import {Context} from "hono";
-import {createTeacherValidation, updateTeacherValidation} from "./teacher.validator";
+import {createParentValidation, updateParentValidation} from "./parent.validator";
 import {handleError} from "../../helper/handleError";
 
-
-export const TeacherController = (service: TeacherService) => ({
+export const ParentController = (service: ParentService) => ({
     create: async (c: Context) => {
         try {
             const body = await c.req.json()
-            const data = createTeacherValidation.parse(body)
-            const teacher = await service.create(data)
+            const data = createParentValidation.parse(body)
+            const parent = await service.create(data)
             return c.json({
-                message: "Guru berhasil ditambahkan",
-                data: {teacher}
+                message: "Orang tua berhasil ditambahkan",
+                data: {parent}
             }, 201)
         }
         catch(error) {
@@ -24,23 +23,21 @@ export const TeacherController = (service: TeacherService) => ({
         const { search, page = "1", limit = "10" } = c.req.query()
 
         const pageNumber = Math.max(Number(page), 1)
-        const limitNumber = Math.min(Math.max(Number(limit), 1), 100) // max 100
+        const limitNumber = Math.min(Math.max(Number(limit), 1), 100)
         const offset = (pageNumber - 1) * limitNumber
 
         try {
-            const teachers = await service.getAll(
-                {
-                    search,
-                    limit: limitNumber,
-                    offset,
-                    page: pageNumber,
-                }
-            )
+            const parents = await service.getAll({
+                search,
+                limit: limitNumber,
+                offset,
+                page: pageNumber,
+            })
 
-            const total = Number(teachers.total.count)
+            const total = Number(parents.total.count)
 
             return c.json({
-                data: teachers.data,
+                data: parents.data,
                 meta: {
                     page: pageNumber,
                     limit: limitNumber,
@@ -57,8 +54,8 @@ export const TeacherController = (service: TeacherService) => ({
     getById: async (c: Context) => {
         try {
             const id = c.req.param("id")
-            const teacher = await service.findById(id)
-            return c.json({ data: teacher })
+            const parent = await service.findById(id)
+            return c.json({ data: parent })
         } catch (error) {
             return handleError(c, error)
         }
@@ -68,9 +65,9 @@ export const TeacherController = (service: TeacherService) => ({
         try {
             const id = c.req.param("id")
             const body = await c.req.json()
-            const data = updateTeacherValidation.parse(body)
-            const teacher = await service.update(id, data)
-            return c.json({ message: "Data guru berhasil diperbarui", data: teacher })
+            const data = updateParentValidation.parse(body)
+            const parent = await service.update(id, data)
+            return c.json({ message: "Data orang tua berhasil diperbarui", data: parent })
         } catch (error) {
             return handleError(c, error)
         }
@@ -80,7 +77,7 @@ export const TeacherController = (service: TeacherService) => ({
         try {
             const id = c.req.param("id")
             await service.delete(id)
-            return c.json({ message: "Guru berhasil dihapus" })
+            return c.json({ message: "Orang tua berhasil dihapus" })
         } catch (error) {
             return handleError(c, error)
         }

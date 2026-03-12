@@ -1,4 +1,4 @@
-import { eq, or } from "drizzle-orm";
+import { eq, like, or } from "drizzle-orm";
 import { db } from "../../config/database";
 import { Auth, AuthSchema, CreateAuth } from "../../db/auth.schema";
 import { IAuthRepository } from "./IAuthRepository";
@@ -25,6 +25,14 @@ export class AuthRepository implements IAuthRepository {
             )
         )
         return user || null
+    }
+
+    async findUsernamesByPrefix(prefix: string): Promise<string[]> {
+        const users = await this.DBClient
+            .select({ username: AuthSchema.username })
+            .from(AuthSchema)
+            .where(like(AuthSchema.username, `${prefix}%`))
+        return users.map(u => u.username)
     }
 
     async setVerified(id: string): Promise<void> {

@@ -1,11 +1,11 @@
 import {Hono} from "hono";
 import {container} from "../../core/container";
-import {TeacherController} from "./teacher.controller"
+import {ParentController} from "./parent.controller"
 import AuthMiddleware from "../auth/auth.middleware";
 
-export const TeacherRoute = () => {
+export const ParentRoute = () => {
     const app = new Hono()
-    const c = TeacherController(container.teacherService)
+    const c = ParentController(container.parentService)
 
     // Protected routes - requires authentication
     app.post("/", AuthMiddleware.check, c.create)
