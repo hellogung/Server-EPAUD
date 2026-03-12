@@ -24,7 +24,7 @@ export class TeacherRepository implements ITeacherRepository {
             // Hash default password
             const hashedPassword = await Bun.password.hash(DEFAULT_PASSWORD, {algorithm: "bcrypt", cost: 10})
 
-            // 1. Create user with role "teacher"
+            // 1. Create user with role "teacher" (auto active, can login immediately)
             const [user] = await tx.insert(AuthSchema).values({
                 full_name: data.name,
                 username,
@@ -32,7 +32,9 @@ export class TeacherRepository implements ITeacherRepository {
                 email: data.email,
                 phone: data.phone,
                 role: "teacher",
-                is_verified: false
+                is_active: true,         // Can login immediately
+                email_verified: false,   // Can verify email later (optional)
+                phone_verified: false    // Can verify phone later (optional)
             }).returning()
 
             // 2. Create teacher linked to the user

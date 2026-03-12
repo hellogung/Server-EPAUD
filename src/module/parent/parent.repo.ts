@@ -21,13 +21,15 @@ export class ParentRepository implements IParentRepository {
             const DEFAULT_PASSWORD = "@User123$"
             const hashedPassword = await Bun.password.hash(DEFAULT_PASSWORD, {algorithm: "bcrypt", cost: 10})
 
-            // 1. Create user with role "parent"
+            // 1. Create user with role "parent" (auto active, can login immediately)
             const [user] = await tx.insert(AuthSchema).values({
                 full_name: data.name,
                 username,
                 password: hashedPassword,
                 role: "parent",
-                is_verified: false
+                is_active: true,         // Can login immediately
+                email_verified: false,   // Can verify email later (optional)
+                phone_verified: false    // Can verify phone later (optional)
             }).returning()
 
             // 2. Create parent linked to the user

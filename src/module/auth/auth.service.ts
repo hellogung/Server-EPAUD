@@ -55,32 +55,45 @@ export class AuthService {
         return await this.repo.register(data)
     }
 
-    async sendVerification(userId: string): Promise<void> {
+    async sendVerification(userId: string, type: "email" | "phone"): Promise<void> {
         const user = await this.repo.findById(userId)
         if (!user) throw new HTTPException(404, {message: "User tidak ditemukan"})
-        if (user.is_verified) throw new HTTPException(400, {message: "Akun sudah terverifikasi"})
+        
+        if (type === "email") {
+            if (!user.email) throw new HTTPException(400, {message: "Email tidak tersedia"})
+            if (user.email_verified) throw new HTTPException(400, {message: "Email sudah terverifikasi"})
+        } else {
+            if (!user.phone) throw new HTTPException(400, {message: "Nomor telepon tidak tersedia"})
+            if (user.phone_verified) throw new HTTPException(400, {message: "Nomor telepon sudah terverifikasi"})
+        }
 
         const code = generateVerificationCode()
 
-        // Store in Redis with TTL
+        // Store in Redis with TTL (include type in key)
         const redis = await RedisClient.getInstance()
-        await redis.setEx(`verify:${userId}`, VERIFICATION_TTL, code)
+        await redis.setEx(`verify:${type}:${userId}`, VERIFICATION_TTL, code)
 
-        // Send via email or phone
-        if (user.email) {
-            await sendVerificationEmail(user.email, code)
-        } else if (user.phone) {
-            await sendVerificationSMS(user.phone, code)
+        // Send verification code
+        if (type === "email") {
+            await sendVerificationEmail(user.email!, code)
+        } else {
+            await sendVerificationSMS(user.phone!, code)
         }
     }
 
-    async verifyAccount(userId: string, code: string): Promise<void> {
+    async verifyAccount(userId: string, code: string, type: "email" | "phone"): Promise<void> {
         const user = await this.repo.findById(userId)
         if (!user) throw new HTTPException(404, {message: "User tidak ditemukan"})
-        if (user.is_verified) throw new HTTPException(400, {message: "Akun sudah terverifikasi"})
+
+        if (type === "email" && user.email_verified) {
+            throw new HTTPException(400, {message: "Email sudah terverifikasi"})
+        }
+        if (type === "phone" && user.phone_verified) {
+            throw new HTTPException(400, {message: "Nomor telepon sudah terverifikasi"})
+        }
 
         const redis = await RedisClient.getInstance()
-        const savedCode = await redis.get(`verify:${userId}`)
+        const savedCode = await redis.get(`verify:${type}:${userId}`)
 
         if (!savedCode) {
             throw new HTTPException(400, {message: "Kode verifikasi tidak ditemukan atau sudah kadaluarsa"})
@@ -89,9 +102,9 @@ export class AuthService {
             throw new HTTPException(400, {message: "Kode verifikasi salah"})
         }
 
-        // Delete code from Redis and mark user as verified
-        await redis.del(`verify:${userId}`)
-        await this.repo.setVerified(userId)
+        // Delete code from Redis and mark as verified
+        await redis.del(`verify:${type}:${userId}`)
+        await this.repo.setVerified(userId, type)
     }
 
     async login(identifier: string, password: string): Promise<LoginResult> {
@@ -101,7 +114,7 @@ export class AuthService {
         const isValid = await Bun.password.verify(password, user.password)
         if (!isValid) throw new HTTPException(401, {message: "Username/Email dan Password salah"})
 
-        if (!user.is_verified) throw new HTTPException(403, {message: "Akun anda belum terverifikasi"})
+        if (!user.is_active) throw new HTTPException(403, {message: "Akun anda belum aktif. Silakan verifikasi terlebih dahulu."})
 
         const refresh_token = await JWTHelper.GenerateRefreshToken(user.id)
         const access_token = await JWTHelper.GenerateAccessToken({

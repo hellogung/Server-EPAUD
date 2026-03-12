@@ -16,14 +16,16 @@ export class AuthValidator {
 
     static sendVerification() {
         return z.object({
-            user_id: z.string().uuid()
+            user_id: z.string().uuid(),
+            type: z.enum(["email", "phone"])
         })
     }
 
     static verify() {
         return z.object({
             user_id: z.string().uuid(),
-            code: z.string().length(6, "Kode verifikasi harus 6 digit")
+            code: z.string().length(6, "Kode verifikasi harus 6 digit"),
+            type: z.enum(["email", "phone"])
         })
     }
 

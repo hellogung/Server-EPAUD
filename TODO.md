@@ -1,9 +1,5 @@
-Service:
-Teacher
-Parent
-Children
-Transaction (Credit, Debit)
-Save
+Implements these Module:
 
-Feature:
-Sistem untuk absensi dan tabungan
+- ATTENDANCE
+- GRADUATION
+- SAVINGS

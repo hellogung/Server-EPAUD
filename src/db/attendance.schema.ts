@@ -27,19 +27,12 @@ export const ScheduleAttendanceSchoolSchema = pgTable("schedule_attendance_schoo
     out: time().notNull(),
 })
 
-// ID, ID Absensi, Id Guru, Id Siswa
+// Types
+export type AttendanceUser = typeof AttendanceUserSchema.$inferSelect
+export type CreateAttendanceUser = typeof AttendanceUserSchema.$inferInsert
 
-// Presensi
-// ID
-// G001
-// S001
-// Datetime
+export type Attendance = typeof AttendanceSchema.$inferSelect
+export type CreateAttendance = typeof AttendanceSchema.$inferInsert
 
-// # Per sekolah punya jadwal masuk pulang
-// SPS Padu Ceria  guru  Senin   07:00   15:00
-// SPS Padu Ceria  guru  ...     07:00   15:00
-// SPS Padu Ceria  guru  Jumat   07:00   15:30
-//
-// SPS Padu Ceria  siswa  Senin   08:00   12:00
-// SPS Padu Ceria  siswa  ...     08:00   12:00
-// SPS Padu Ceria  siswa  Jumat   08:00   12:30
+export type ScheduleAttendanceSchool = typeof ScheduleAttendanceSchoolSchema.$inferSelect
+export type CreateScheduleAttendanceSchool = typeof ScheduleAttendanceSchoolSchema.$inferInsert

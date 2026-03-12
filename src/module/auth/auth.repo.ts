@@ -35,9 +35,13 @@ export class AuthRepository implements IAuthRepository {
         return users.map(u => u.username)
     }
 
-    async setVerified(id: string): Promise<void> {
+    async setVerified(id: string, type: "email" | "phone"): Promise<void> {
+        const updateData = type === "email" 
+            ? { email_verified: true, is_active: true }
+            : { phone_verified: true, is_active: true }
+        
         await this.DBClient.update(AuthSchema)
-            .set({ is_verified: true })
+            .set(updateData)
             .where(eq(AuthSchema.id, id))
     }
 }

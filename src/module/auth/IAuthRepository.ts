@@ -5,5 +5,5 @@ export interface IAuthRepository {
     findById(id: string): Promise<Auth | null>
     findByIdentifier(identifier: string): Promise<Auth | null>
     findUsernamesByPrefix(prefix: string): Promise<string[]>
-    setVerified(id: string): Promise<void>
+    setVerified(id: string, type: "email" | "phone"): Promise<void>
 }

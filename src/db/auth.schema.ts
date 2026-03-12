@@ -9,7 +9,9 @@ export const AuthSchema = pgTable("users", {
     password: varchar({ length: 255 }).notNull(),
     token: varchar({ length: 500 }).unique(),
     role: varchar({ length: 50 }).notNull().default("user"),
-    is_verified: boolean().notNull().default(false),
+    is_active: boolean().notNull().default(false),        // account can login
+    email_verified: boolean().notNull().default(false),   // email verified (for badge)
+    phone_verified: boolean().notNull().default(false),   // phone verified (for badge)
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

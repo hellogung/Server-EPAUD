@@ -37,12 +37,13 @@ export const AuthController = (
                 role: "kepala_sekolah",
             })
 
-            // Auto-send verification
-            await service.sendVerification(user.id)
+            // Auto-send verification (prioritize email, fallback to phone)
+            const verificationType = data.email ? "email" : "phone"
+            await service.sendVerification(user.id, verificationType)
 
             return c.json({
                 message: "Registrasi berhasil. Silakan verifikasi akun Anda.",
-                data: { user_id: user.id, school_id: school.id }
+                data: { user_id: user.id, school_id: school.id, verification_type: verificationType }
             }, 201)
         } catch (error) {
             return handleError(c, error)
@@ -52,9 +53,9 @@ export const AuthController = (
     sendVerification: async (c: Context) => {
         try {
             const body = await c.req.json()
-            const { user_id } = AuthValidator.sendVerification().parse(body)
-            await service.sendVerification(user_id)
-            return c.json({ message: "Kode verifikasi telah dikirim" })
+            const { user_id, type } = AuthValidator.sendVerification().parse(body)
+            await service.sendVerification(user_id, type)
+            return c.json({ message: `Kode verifikasi telah dikirim ke ${type}` })
         } catch (error) {
             return handleError(c, error)
         }
@@ -63,9 +64,9 @@ export const AuthController = (
     verify: async (c: Context) => {
         try {
             const body = await c.req.json()
-            const { user_id, code } = AuthValidator.verify().parse(body)
-            await service.verifyAccount(user_id, code)
-            return c.json({ message: "Akun berhasil diverifikasi" })
+            const { user_id, code, type } = AuthValidator.verify().parse(body)
+            await service.verifyAccount(user_id, code, type)
+            return c.json({ message: `${type === "email" ? "Email" : "Nomor telepon"} berhasil diverifikasi` })
         } catch (error) {
             return handleError(c, error)
         }
