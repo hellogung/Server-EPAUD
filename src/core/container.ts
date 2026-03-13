@@ -13,6 +13,12 @@ import {StudentRepository} from "../module/student/student.repo";
 import {StudentService} from "../module/student/student.service";
 import {ClassRepository} from "../module/class/class.repo";
 import {ClassService} from "../module/class/class.service";
+import {AttendanceRepository} from "../module/attendance/attendance.repo";
+import {AttendanceService} from "../module/attendance/attendance.service";
+import {GraduationRepository} from "../module/graduation/graduation.repo";
+import {GraduationService} from "../module/graduation/graduation.service";
+import {SavingsRepository} from "../module/savings/savings.repo";
+import {SavingsService} from "../module/savings/savings.service";
 
 // Create authRepo first as it's needed by other repos
 const authRepo = new AuthRepository(db)
@@ -38,6 +44,15 @@ export const container = {
 
     classRepo: new ClassRepository(db),
     classService: null as unknown as ClassService,
+
+    attendanceRepo: new AttendanceRepository(db),
+    attendanceService: null as unknown as AttendanceService,
+
+    graduationRepo: new GraduationRepository(db),
+    graduationService: null as unknown as GraduationService,
+
+    savingsRepo: new SavingsRepository(db),
+    savingsService: null as unknown as SavingsService,
 }
 
 container.schoolService = new SchoolService(container.schoolRepo)
@@ -47,3 +62,6 @@ container.teacherService = new TeacherService(container.teacherRepo)
 container.parentService = new ParentService(container.parentRepo)
 container.studentService = new StudentService(container.studentRepo)
 container.classService = new ClassService(container.classRepo)
+container.attendanceService = new AttendanceService(container.attendanceRepo)
+container.graduationService = new GraduationService(container.graduationRepo)
+container.savingsService = new SavingsService(container.savingsRepo)

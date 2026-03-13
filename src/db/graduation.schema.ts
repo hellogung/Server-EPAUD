@@ -54,3 +54,7 @@ export const GraduationSchema = pgTable("graduations", {
     IS NOT NULL
     )`,
 ]);
+
+// Types
+export type Graduation = typeof GraduationSchema.$inferSelect
+export type CreateGraduation = typeof GraduationSchema.$inferInsert

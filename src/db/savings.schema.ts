@@ -52,3 +52,10 @@ export const SavingsTransactionSchema = pgTable("savings_transactions", {
     // Saldo tidak boleh negatif
     sql`CONSTRAINT chk_balance_after CHECK (${t.balance_after} >= 0)`,
 ]);
+
+// Types
+export type Savings = typeof SavingsSchema.$inferSelect
+export type CreateSavings = typeof SavingsSchema.$inferInsert
+
+export type SavingsTransaction = typeof SavingsTransactionSchema.$inferSelect
+export type CreateSavingsTransaction = typeof SavingsTransactionSchema.$inferInsert
