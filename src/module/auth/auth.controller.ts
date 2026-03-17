@@ -16,13 +16,12 @@ export const AuthController = (
     register: async (c: Context) => {
         try {
             const body = await c.req.json()
-            console.log(body)
             const data = AuthValidator.register().parse(body)
 
             const school = await schoolService.create({ school_name: data.nama_sekolah })
             const username = data.email || data.phone!
 
-            console.log(body)
+
             const user = await service.register({
                 full_name: data.nama_kepala_sekolah,
                 username,
@@ -31,6 +30,7 @@ export const AuthController = (
                 password: data.password,
                 role: "user",
             })
+
             await userSchoolService.create({
                 user_id: user.id,
                 school_id: school.id,

@@ -1,12 +1,19 @@
-import { eq } from "drizzle-orm"
+import { and, eq, ne } from "drizzle-orm"
 import { db } from "../../config/database"
 import { CreateSchool, School, SchoolSchema } from "../../db/school.schema"
 import { ISchoolRepository, UpdateSchoolData } from "./ISchoolRepository"
+import { HTTPException } from "hono/http-exception"
 
 export class SchoolRepository implements ISchoolRepository {
-    constructor(private readonly DBClient = db) {}
+    constructor(private readonly DBClient = db) { }
 
     async create(data: CreateSchool): Promise<School> {
+        const existingSchool = await this.DBClient.select().from(SchoolSchema).where(eq(SchoolSchema.school_name, data.school_name))
+
+        if (existingSchool.length > 0) {
+            throw new HTTPException(400, { message: `Sekolah dengan nama "${data.school_name}" sudah ada` })
+        }
+
         const [school] = await this.DBClient.insert(SchoolSchema).values(data).returning()
         return school
     }
