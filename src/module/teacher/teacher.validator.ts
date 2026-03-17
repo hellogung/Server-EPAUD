@@ -15,7 +15,7 @@ export const createTeacherValidation = z.object({
     phone: z.string().min(7).optional(),
     birthday: z.coerce.date().transform(d => d.toISOString().split('T')[0]),
     joindate: z.coerce.date().transform(d => d.toISOString().split('T')[0]),
-    exitdate: z.coerce.date().transform(d => d.toISOString().split('T')[0]),
+    exitdate: z.coerce.date().transform(d => d.toISOString().split('T')[0]).optional(),
     picture: z.string().min(1).optional(),
 })
 
