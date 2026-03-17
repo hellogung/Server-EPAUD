@@ -138,5 +138,37 @@ export const AuthController = (
         } catch (error) {
             return handleError(c, error)
         }
+    },
+
+    getAll: async (c: Context) => {
+        const { search, role, page = "1", limit = "10" } = c.req.query()
+
+        const pageNumber = Math.max(Number(page), 1)
+        const limitNumber = Math.min(Math.max(Number(limit), 1), 100)
+        const offset = (pageNumber - 1) * limitNumber
+
+        try {
+            const users = await service.getAll({
+                search,
+                role,
+                limit: limitNumber,
+                offset,
+                page: pageNumber,
+            })
+
+            const total = Number(users.total.count)
+
+            return c.json({
+                data: users.data,
+                meta: {
+                    page: pageNumber,
+                    limit: limitNumber,
+                    total,
+                    totalPages: Math.ceil(total / limitNumber),
+                },
+            }, 200)
+        } catch (error) {
+            return handleError(c, error)
+        }
     }
 })

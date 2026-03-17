@@ -1,11 +1,12 @@
 import {decode, verify} from "hono/jwt";
-import {Auth} from "../../db/auth.schema";
+import {Auth, AuthSchema} from "../../db/auth.schema";
 import {IAuthRepository} from "./IAuthRepository";
 import {Config} from "../../config";
 import RedisClient from "../../config/redis";
 import JWTHelper from "../../helper/jwt";
 import {HTTPException} from "hono/http-exception";
 import {generateVerificationCode, sendVerificationEmail, sendVerificationSMS} from "../../helper/verification";
+import {and, ilike, or} from "drizzle-orm";
 
 const VERIFICATION_TTL = 3 * 60 // 3 minutes in seconds
 
@@ -46,8 +47,38 @@ type LoginResult = {
     user: { id: string; full_name: string; username: string; role: string }
 }
 
+type GetAllParams = {
+    search?: string
+    role?: string
+    limit: number
+    offset: number
+    page: number
+}
+
 export class AuthService {
     constructor(private readonly repo: IAuthRepository) {
+    }
+
+    async getAll({
+        search,
+        role,
+        limit,
+        offset,
+    }: GetAllParams): Promise<{ data: Auth[], total: { count: number } }> {
+        const searchCondition = search ? or(
+            ilike(AuthSchema.full_name, `%${search}%`),
+            ilike(AuthSchema.username, `%${search}%`),
+            ilike(AuthSchema.email, `%${search}%`),
+            ilike(AuthSchema.phone, `%${search}%`)
+        ) : undefined
+
+        const roleCondition = role ? ilike(AuthSchema.role, role) : undefined
+
+        const condition = searchCondition && roleCondition
+            ? and(searchCondition, roleCondition)
+            : searchCondition || roleCondition
+
+        return await this.repo.getAll({ condition, limit, offset })
     }
 
     async register(data: RegisterData): Promise<Auth> {

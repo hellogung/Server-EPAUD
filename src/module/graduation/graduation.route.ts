@@ -8,7 +8,7 @@ export const GraduationRoute = () => {
     const c = GraduationController(container.graduationService)
 
     app.post("/", AuthMiddleware.check, c.create)
-    app.get("/", AuthMiddleware.check, c.getAll)
+    app.get("/", c.getAll)
     app.get("/:id", AuthMiddleware.check, c.getById)
     app.put("/:id", AuthMiddleware.check, c.update)
     app.delete("/:id", AuthMiddleware.check, c.delete)

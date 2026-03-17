@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm"
+import { and, eq, ne, sql, SQL } from "drizzle-orm"
 import { db } from "../../config/database"
 import { CreateSchool, School, SchoolSchema } from "../../db/school.schema"
 import { ISchoolRepository, UpdateSchoolData } from "./ISchoolRepository"
@@ -16,6 +16,22 @@ export class SchoolRepository implements ISchoolRepository {
 
         const [school] = await this.DBClient.insert(SchoolSchema).values(data).returning()
         return school
+    }
+
+    async getAll({limit, offset, condition}: {limit: number, offset: number, condition: SQL<unknown> | undefined}): Promise<{data: School[], total: {count: number}}> {
+        const schools = await this.DBClient
+            .select()
+            .from(SchoolSchema)
+            .where(condition)
+            .limit(limit)
+            .offset(offset)
+
+        const [totalResult] = await this.DBClient
+            .select({ count: sql<number>`count(*)` })
+            .from(SchoolSchema)
+            .where(condition)
+
+        return {data: schools, total: totalResult}
     }
 
     async findById(id: string): Promise<School | null> {

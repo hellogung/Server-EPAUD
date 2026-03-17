@@ -8,6 +8,7 @@ export const SchoolRoute = () => {
     const c = SchoolController(container.schoolService)
 
     // Protected routes - requires authentication
+    app.get("/",  c.getAll)
     app.post("/", AuthMiddleware.check, c.create)
     app.get("/:id", AuthMiddleware.check, c.getById)
     app.patch("/:id", AuthMiddleware.check, c.update)

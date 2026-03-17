@@ -1,4 +1,4 @@
-import { eq, like, or } from "drizzle-orm";
+import { eq, like, or, sql, SQL } from "drizzle-orm";
 import { db } from "../../config/database";
 import { Auth, AuthSchema, CreateAuth } from "../../db/auth.schema";
 import { IAuthRepository } from "./IAuthRepository";
@@ -9,6 +9,34 @@ export class AuthRepository implements IAuthRepository {
     async register(data: CreateAuth): Promise<Auth> {
         const [user] = await this.DBClient.insert(AuthSchema).values(data).returning()
         return user
+    }
+
+    async getAll({limit, offset, condition}: {limit: number, offset: number, condition: SQL<unknown> | undefined}): Promise<{data: Auth[], total: {count: number}}> {
+        const users = await this.DBClient
+            .select({
+                id: AuthSchema.id,
+                full_name: AuthSchema.full_name,
+                username: AuthSchema.username,
+                email: AuthSchema.email,
+                phone: AuthSchema.phone,
+                role: AuthSchema.role,
+                is_active: AuthSchema.is_active,
+                email_verified: AuthSchema.email_verified,
+                phone_verified: AuthSchema.phone_verified,
+                createdAt: AuthSchema.createdAt,
+                updatedAt: AuthSchema.updatedAt,
+            })
+            .from(AuthSchema)
+            .where(condition)
+            .limit(limit)
+            .offset(offset)
+
+        const [totalResult] = await this.DBClient
+            .select({ count: sql<number>`count(*)` })
+            .from(AuthSchema)
+            .where(condition)
+
+        return {data: users as Auth[], total: totalResult}
     }
 
     async findById(id: string): Promise<Auth | null> {

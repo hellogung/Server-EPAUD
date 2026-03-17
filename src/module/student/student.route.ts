@@ -9,7 +9,7 @@ export const StudentRoute = () => {
 
     // Protected routes - requires authentication
     app.post("/", AuthMiddleware.check, c.create)
-    app.get("/", AuthMiddleware.check, c.getAll)
+    app.get("/", c.getAll)
     app.get("/:id", AuthMiddleware.check, c.getById)
     app.get("/parent/:parentId", AuthMiddleware.check, c.getByParentId)
     app.put("/:id", AuthMiddleware.check, c.update)

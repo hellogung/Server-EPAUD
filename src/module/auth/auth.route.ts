@@ -18,6 +18,7 @@ export const AuthRoute = () => {
     app.delete("/logout", AuthMiddleware.check, c.logout)
     app.get("/verify-token", AuthMiddleware.check, c.verifyAccessToken)
     app.get("/profile", AuthMiddleware.check, c.profile)
+    app.get("/users",  c.getAll)
 
     return app
 }
