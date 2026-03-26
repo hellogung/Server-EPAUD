@@ -107,10 +107,10 @@ export const AuthController = (
 
     verifyAccessToken: async (c: Context) => {
         try {
-            const { id } = c.get("user")
-            const valid = await service.verifyToken(id)
+            const user = c.get("user")
+            const valid = await service.verifyToken(user.id)
             if (!valid) return c.json({ message: "Token invalid" }, 401)
-            return c.json({ valid: true })
+            return c.json({ valid: true, data: user })
         } catch (error) {
             return handleError(c, error)
         }

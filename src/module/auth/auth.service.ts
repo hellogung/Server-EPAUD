@@ -8,7 +8,7 @@ import {HTTPException} from "hono/http-exception";
 import {generateVerificationCode, sendVerificationEmail, sendVerificationSMS} from "../../helper/verification";
 import {and, ilike, or} from "drizzle-orm";
 
-const VERIFICATION_TTL = 3 * 60 // 3 minutes in seconds
+const VERIFICATION_TTL = 1 * 60 // 1 minutes in seconds
 
 // Shared function to generate unique username from name
 export async function generateUsername(name: string, repo: IAuthRepository): Promise<string> {
@@ -179,7 +179,7 @@ export class AuthService {
 
     async verifyToken(id: string): Promise<boolean> {
         const redis = await RedisClient.getInstance()
-        const token = await redis.get(`refresh:${id}`)
+        const token = await redis.get(`access:${id}`)
         return !!token
     }
 
