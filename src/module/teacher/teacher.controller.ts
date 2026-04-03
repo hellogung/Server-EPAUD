@@ -1,7 +1,7 @@
-import {TeacherService} from "./teacher.service";
-import {Context} from "hono";
-import {createTeacherValidation, updateTeacherValidation} from "./teacher.validator";
-import {handleError} from "../../helper/handleError";
+import { TeacherService } from "./teacher.service";
+import { Context } from "hono";
+import { createTeacherValidation, updateTeacherValidation } from "./teacher.validator";
+import { handleError } from "../../helper/handleError";
 
 
 export const TeacherController = (service: TeacherService) => ({
@@ -12,15 +12,16 @@ export const TeacherController = (service: TeacherService) => ({
             const teacher = await service.create(data)
             return c.json({
                 message: "Guru berhasil ditambahkan",
-                data: {teacher}
+                data: { teacher }
             }, 201)
         }
-        catch(error) {
+        catch (error) {
             return handleError(c, error)
         }
     },
 
     getAll: async (c: Context) => {
+        const user = c.get("user")
         const { search, page = "1", limit = "10" } = c.req.query()
 
         const pageNumber = Math.max(Number(page), 1)
@@ -34,6 +35,7 @@ export const TeacherController = (service: TeacherService) => ({
                     limit: limitNumber,
                     offset,
                     page: pageNumber,
+                    school_id: user.school_id
                 }
             )
 

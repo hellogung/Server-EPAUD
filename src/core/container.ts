@@ -5,20 +5,20 @@ import { SchoolRepository } from "../module/school/school.repo";
 import { SchoolService } from "../module/school/school.service";
 import { UserSchoolRepository } from "../module/user_school/user_school.repo";
 import { UserSchoolService } from "../module/user_school/user_school.service";
-import {TeacherRepository} from "../module/teacher/teacher.repo";
-import {TeacherService} from "../module/teacher/teacher.service";
-import {ParentRepository} from "../module/parent/parent.repo";
-import {ParentService} from "../module/parent/parent.service";
-import {StudentRepository} from "../module/student/student.repo";
-import {StudentService} from "../module/student/student.service";
-import {ClassRepository} from "../module/class/class.repo";
-import {ClassService} from "../module/class/class.service";
-import {AttendanceRepository} from "../module/attendance/attendance.repo";
-import {AttendanceService} from "../module/attendance/attendance.service";
-import {GraduationRepository} from "../module/graduation/graduation.repo";
-import {GraduationService} from "../module/graduation/graduation.service";
-import {SavingsRepository} from "../module/savings/savings.repo";
-import {SavingsService} from "../module/savings/savings.service";
+import { TeacherRepository } from "../module/teacher/teacher.repo";
+import { TeacherService } from "../module/teacher/teacher.service";
+import { ParentRepository } from "../module/parent/parent.repo";
+import { ParentService } from "../module/parent/parent.service";
+import { StudentRepository } from "../module/student/student.repo";
+import { StudentService } from "../module/student/student.service";
+import { ClassRepository } from "../module/class/class.repo";
+import { ClassService } from "../module/class/class.service";
+import { AttendanceRepository } from "../module/attendance/attendance.repo";
+import { AttendanceService } from "../module/attendance/attendance.service";
+import { GraduationRepository } from "../module/graduation/graduation.repo";
+import { GraduationService } from "../module/graduation/graduation.service";
+import { SavingsRepository } from "../module/savings/savings.repo";
+import { SavingsService } from "../module/savings/savings.service";
 
 // Create authRepo first as it's needed by other repos
 const authRepo = new AuthRepository(db)
@@ -56,7 +56,7 @@ export const container = {
 }
 
 container.schoolService = new SchoolService(container.schoolRepo)
-container.authService = new AuthService(container.authRepo)
+container.authService = new AuthService(container.authRepo, container.userSchoolRepo)
 container.userSchoolService = new UserSchoolService(container.userSchoolRepo)
 container.teacherService = new TeacherService(container.teacherRepo)
 container.parentService = new ParentService(container.parentRepo)

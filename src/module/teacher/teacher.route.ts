@@ -1,6 +1,6 @@
-import {Hono} from "hono";
-import {container} from "../../core/container";
-import {TeacherController} from "./teacher.controller"
+import { Hono } from "hono";
+import { container } from "../../core/container";
+import { TeacherController } from "./teacher.controller"
 import AuthMiddleware from "../auth/auth.middleware";
 
 export const TeacherRoute = () => {
@@ -9,7 +9,7 @@ export const TeacherRoute = () => {
 
     // Protected routes - requires authentication
     app.post("/", AuthMiddleware.check, c.create)
-    app.get("/", c.getAll)
+    app.get("/", AuthMiddleware.check, c.getAll)
     app.get("/:id", AuthMiddleware.check, c.getById)
     app.put("/:id", AuthMiddleware.check, c.update)
     app.delete("/:id", AuthMiddleware.check, c.delete)

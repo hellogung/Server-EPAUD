@@ -1,12 +1,13 @@
-import {decode, verify} from "hono/jwt";
-import {Auth, AuthSchema} from "../../db/auth.schema";
-import {IAuthRepository} from "./IAuthRepository";
-import {Config} from "../../config";
+import { decode, verify } from "hono/jwt";
+import { Auth, AuthSchema } from "../../db/auth.schema";
+import { IAuthRepository } from "./IAuthRepository";
+import { Config } from "../../config";
 import RedisClient from "../../config/redis";
 import JWTHelper from "../../helper/jwt";
-import {HTTPException} from "hono/http-exception";
-import {generateVerificationCode, sendVerificationEmail, sendVerificationSMS} from "../../helper/verification";
-import {and, ilike, or} from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
+import { generateVerificationCode, sendVerificationEmail, sendVerificationSMS } from "../../helper/verification";
+import { and, ilike, or } from "drizzle-orm";
+import { IUserSchoolRepository } from "../user_school/IUserSchoolRepository";
 
 const VERIFICATION_TTL = 1 * 60 // 1 minutes in seconds
 
@@ -19,7 +20,7 @@ export async function generateUsername(name: string, repo: IAuthRepository): Pro
     if (existingUsernames.length === 0) {
         return baseUsername
     }
-    
+
     if (!existingUsernames.includes(baseUsername)) {
         return baseUsername
     }
@@ -56,7 +57,7 @@ type GetAllParams = {
 }
 
 export class AuthService {
-    constructor(private readonly repo: IAuthRepository) {
+    constructor(private readonly repo: IAuthRepository, private readonly userSchoolRepo: IUserSchoolRepository) {
     }
 
     async getAll({
@@ -82,20 +83,20 @@ export class AuthService {
     }
 
     async register(data: RegisterData): Promise<Auth> {
-        data.password = await Bun.password.hash(data.password, {algorithm: "bcrypt", cost: 10})
+        data.password = await Bun.password.hash(data.password, { algorithm: "bcrypt", cost: 10 })
         return await this.repo.register(data)
     }
 
     async sendVerification(userId: string, type: "email" | "phone"): Promise<void> {
         const user = await this.repo.findById(userId)
-        if (!user) throw new HTTPException(404, {message: "User tidak ditemukan"})
-        
+        if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
+
         if (type === "email") {
-            if (!user.email) throw new HTTPException(400, {message: "Email tidak tersedia"})
-            if (user.email_verified) throw new HTTPException(400, {message: "Email sudah terverifikasi"})
+            if (!user.email) throw new HTTPException(400, { message: "Email tidak tersedia" })
+            if (user.email_verified) throw new HTTPException(400, { message: "Email sudah terverifikasi" })
         } else {
-            if (!user.phone) throw new HTTPException(400, {message: "Nomor telepon tidak tersedia"})
-            if (user.phone_verified) throw new HTTPException(400, {message: "Nomor telepon sudah terverifikasi"})
+            if (!user.phone) throw new HTTPException(400, { message: "Nomor telepon tidak tersedia" })
+            if (user.phone_verified) throw new HTTPException(400, { message: "Nomor telepon sudah terverifikasi" })
         }
 
         const code = generateVerificationCode()
@@ -114,23 +115,23 @@ export class AuthService {
 
     async verifyAccount(userId: string, code: string, type: "email" | "phone"): Promise<void> {
         const user = await this.repo.findById(userId)
-        if (!user) throw new HTTPException(404, {message: "User tidak ditemukan"})
+        if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
 
         if (type === "email" && user.email_verified) {
-            throw new HTTPException(400, {message: "Email sudah terverifikasi"})
+            throw new HTTPException(400, { message: "Email sudah terverifikasi" })
         }
         if (type === "phone" && user.phone_verified) {
-            throw new HTTPException(400, {message: "Nomor telepon sudah terverifikasi"})
+            throw new HTTPException(400, { message: "Nomor telepon sudah terverifikasi" })
         }
 
         const redis = await RedisClient.getInstance()
         const savedCode = await redis.get(`verify:${type}:${userId}`)
 
         if (!savedCode) {
-            throw new HTTPException(400, {message: "Kode verifikasi tidak ditemukan atau sudah kadaluarsa"})
+            throw new HTTPException(400, { message: "Kode verifikasi tidak ditemukan atau sudah kadaluarsa" })
         }
         if (savedCode !== code) {
-            throw new HTTPException(400, {message: "Kode verifikasi salah"})
+            throw new HTTPException(400, { message: "Kode verifikasi salah" })
         }
 
         // Delete code from Redis and mark as verified
@@ -140,19 +141,27 @@ export class AuthService {
 
     async login(identifier: string, password: string): Promise<LoginResult> {
         const user = await this.repo.findByIdentifier(identifier)
-        if (!user) throw new HTTPException(404, {message: "User tidak ditemukan"})
+        if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
 
         const isValid = await Bun.password.verify(password, user.password)
-        if (!isValid) throw new HTTPException(401, {message: "Username/Email dan Password salah"})
+        if (!isValid) throw new HTTPException(401, { message: "Username/Email dan Password salah" })
 
-        if (!user.is_active) throw new HTTPException(403, {message: "Akun anda belum aktif. Silakan verifikasi terlebih dahulu."})
+        if (!user.is_active) throw new HTTPException(403, { message: "Akun anda belum aktif. Silakan verifikasi terlebih dahulu." })
+
+        let school_id: string | undefined
+        if (user.role === "kepala_sekolah") {
+            const userSchool = await this.userSchoolRepo.getByUserId(user.id)
+            if (!userSchool) throw new HTTPException(404, { message: "User school tidak ditemukan" })
+            school_id = userSchool.school_id
+        }
 
         const refresh_token = await JWTHelper.GenerateRefreshToken(user.id)
         const access_token = await JWTHelper.GenerateAccessToken({
             id: user.id,
             full_name: user.full_name,
             username: user.username,
-            role: user.role
+            role: user.role,
+            school_id: school_id
         })
 
         const redis = await RedisClient.getInstance()
@@ -160,14 +169,14 @@ export class AuthService {
         const accessTTL = Config.EXPIRED_ACCESS_TOKEN * 60
         // Refresh token: 30 days (in seconds)
         const refreshTTL = Config.EXPIRED_REFRESH_TOKEN * 24 * 60 * 60
-        
+
         await redis.setEx(`refresh:${user.id}`, refreshTTL, refresh_token)
         await redis.setEx(`access:${user.id}`, accessTTL, access_token)
 
         return {
             access_token,
             refresh_token,
-            user: {id: user.id, full_name: user.full_name, username: user.username, role: user.role}
+            user: { id: user.id, full_name: user.full_name, username: user.username, role: user.role }
         }
     }
 
@@ -192,26 +201,34 @@ export class AuthService {
         const token_exist = await redis.get(`refresh:${decoded.payload.sub}`)
 
         // Jika tidak ada, maka return
-        if (token != token_exist) throw new HTTPException(401, {message: "Token has been revoked"})
+        if (token != token_exist) throw new HTTPException(401, { message: "Token has been revoked" })
 
         // Jika ada,
         // Validasi exp refresh token
         const token_verified = await verify(token, Config.REFRESH_SECRET_KEY as string)
 
         // Jika token expired
-        if (!token_verified) throw new HTTPException(401, {message: "Token expired"})
+        if (!token_verified) throw new HTTPException(401, { message: "Token expired" })
 
         // Generated access token
         // 1. Get User and check
         const user = await this.repo.findById(decoded.payload.sub as string)
-        if (!user) throw new HTTPException(404, {message: "User tidak ditemukan"})
+        if (!user) throw new HTTPException(404, { message: "User tidak ditemukan" })
+
+        let school_id: string | undefined
+        if (user.role === "kepala_sekolah") {
+            const userSchool = await this.userSchoolRepo.getByUserId(user.id)
+            if (!userSchool) throw new HTTPException(404, { message: "User school tidak ditemukan" })
+            school_id = userSchool.school_id
+        }
 
         // 2. Generate New Access Token
         const access_token = await JWTHelper.GenerateAccessToken({
             id: user.id,
             username: user.username,
             role: user.role,
-            full_name: user.full_name
+            full_name: user.full_name,
+            school_id: school_id
         })
 
         // 3. Save new access token into redis (15 minutes in seconds)

@@ -1,6 +1,6 @@
 import { ITeacherRepository, UpdateTeacherData, CreateTeacherData } from "./ITeacherRepository";
 import { Teacher, TeacherSchema } from "../../db/teacher.schema";
-import { ilike, or } from "drizzle-orm";
+import { and, eq, ilike, or } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 type GetAllParams = {
@@ -8,6 +8,7 @@ type GetAllParams = {
     limit: number
     offset: number
     page: number
+    school_id: string
 }
 
 export class TeacherService {
@@ -23,11 +24,15 @@ export class TeacherService {
         limit,
         offset,
         page,
+        school_id
     }: GetAllParams): Promise<{ data: Teacher[], total: { count: number } }> {
-        const condition = search ? or(
-            ilike(TeacherSchema.name, `%${search}%`),
-            ilike(TeacherSchema.email, `%${search}%`)
-        ) : undefined
+        const condition = search ? and(
+            eq(TeacherSchema.school_id, school_id),
+            or(
+                ilike(TeacherSchema.name, `%${search}%`),
+                ilike(TeacherSchema.email, `%${search}%`)
+            )
+        ) : eq(TeacherSchema.school_id, school_id)
 
         return await this.repo.getAll({
             condition,

@@ -18,11 +18,7 @@ import { sign, verify, decode } from "hono/jwt"
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWd1bmcgR3VtZWxhciIsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiZ3VuZ2hlbGxvQGdtYWlsLmNvbSIsImV4cCI6MTc2NDk0ODQyMH0.3fwRAkySUKL5JFSL7h86sPOdbXJ_x5AMHRScW-8TLcA"
     const secret_key = process.env.SECRET_KEY as string
 
-    
+
     const decode = await verify(token, secret_key)
-    console.log(decode)
-    
-    // const {header, payload} = decode(token)
-    // console.log(header)
-    // console.log(payload)
+
 })()

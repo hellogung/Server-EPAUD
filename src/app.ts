@@ -19,13 +19,14 @@ app.use("/public/*", serveStatic({
     },
 }))
 // app.use('*', logger());
-app.use('*', requestLogger())
 app.use('*', cors({
     origin: Config.CORS_ORIGINS,
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
 }))
+
+app.use('*', requestLogger())
 
 // Health check
 app.get('/', (c) => {

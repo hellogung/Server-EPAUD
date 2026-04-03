@@ -6,6 +6,7 @@ type dataType = {
     full_name?: string,
     username?: string
     role?: string,
+    school_id?: string,
     exp: number
 }
 
@@ -19,13 +20,14 @@ class JWTHelper {
         return await sign(payload, Config.REFRESH_SECRET_KEY as string, "HS256")
     }
 
-    static async GenerateAccessToken(data: {id: string, username: string, role: string, full_name: string}): Promise<string> {
+    static async GenerateAccessToken(data: { id: string, username: string, role: string, full_name: string, school_id?: string }): Promise<string> {
         // Generate Refresh Token
-        const accessPayload : dataType = {
+        const accessPayload: dataType = {
             sub: data.id,
             full_name: data.full_name,
             username: data.username,
             role: data.role,
+            school_id: data.school_id,
             exp: Math.floor(Date.now() / 1000) + 60 * Config.EXPIRED_ACCESS_TOKEN
         }
 

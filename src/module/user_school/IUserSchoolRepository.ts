@@ -2,4 +2,5 @@ import { CreateUserSchool, UserSchool } from "../../db/user_school.schema"
 
 export interface IUserSchoolRepository {
     create(data: CreateUserSchool): Promise<UserSchool>
+    getByUserId(user_id: string): Promise<UserSchool | null>
 }
