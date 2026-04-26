@@ -1,28 +1,28 @@
-import {db} from "../../config/database";
-import {CreateTeacher, Teacher, TeacherSchema} from "../../db/teacher.schema";
-import {AuthSchema} from "../../db/auth.schema";
-import {eq, sql, SQL} from "drizzle-orm";
-import {ITeacherRepository, UpdateTeacherData, CreateTeacherData} from "./ITeacherRepository";
-import {generateUsername} from "../auth/auth.service";
-import {IAuthRepository} from "../auth/IAuthRepository";
+import { db } from "../../config/database";
+import { CreateTeacher, Teacher, TeacherSchema } from "../../db/teacher.schema";
+import { AuthSchema } from "../../db/auth.schema";
+import { eq, sql, SQL } from "drizzle-orm";
+import { ITeacherRepository, UpdateTeacherData, CreateTeacherData } from "./ITeacherRepository";
+import { generateUsername } from "../auth/auth.service";
+import { IAuthRepository } from "../auth/IAuthRepository";
 
 export class TeacherRepository implements ITeacherRepository {
     constructor(
         private readonly DBClient = db,
         private readonly authRepo?: IAuthRepository
-    ) {}
+    ) { }
 
     async create(data: CreateTeacherData): Promise<Teacher> {
         if (!this.authRepo) throw new Error("AuthRepository is required for create operation")
-        
+
         return await this.DBClient.transaction(async (tx) => {
             // Generate username from name
             const username = await generateUsername(data.name, this.authRepo!)
 
             const DEFAULT_PASSWORD = "@User123$"
-            
+
             // Hash default password
-            const hashedPassword = await Bun.password.hash(DEFAULT_PASSWORD, {algorithm: "bcrypt", cost: 10})
+            const hashedPassword = await Bun.password.hash(DEFAULT_PASSWORD, { algorithm: "bcrypt", cost: 10 })
 
             // 1. Create user with role "teacher" (auto active, can login immediately)
             const [user] = await tx.insert(AuthSchema).values({
@@ -47,7 +47,7 @@ export class TeacherRepository implements ITeacherRepository {
         })
     }
 
-    async getAll({limit, offset, condition} : {limit: number, offset: number, condition: SQL<unknown> | undefined}): Promise<{data: Teacher[], total: {count: number}}> {
+    async getAll({ limit, offset, condition }: { limit: number, offset: number, condition: SQL<unknown> | undefined }): Promise<{ data: Teacher[], total: { count: number } }> {
         const teachers = await this.DBClient
             .select()
             .from(TeacherSchema)
@@ -60,7 +60,7 @@ export class TeacherRepository implements ITeacherRepository {
             .from(TeacherSchema)
             .where(condition)
 
-        return {data: teachers, total: totalResult}
+        return { data: teachers, total: totalResult }
     }
 
     async findById(id: string): Promise<Teacher | null> {

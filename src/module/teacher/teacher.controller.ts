@@ -22,6 +22,7 @@ export const TeacherController = (service: TeacherService) => ({
 
     getAll: async (c: Context) => {
         const user = c.get("user")
+        console.log({ user })
         const { search, page = "1", limit = "10" } = c.req.query()
 
         const pageNumber = Math.max(Number(page), 1)
